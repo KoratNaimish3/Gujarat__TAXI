@@ -37,6 +37,7 @@ const gujaratCities = [
   "Godhra", "Valsad", "Kheda", "Somnath", "Dwarka", "Mahesana"
 ];
 
+
 interface CityInputProps {
   label: string;
   value: string;
