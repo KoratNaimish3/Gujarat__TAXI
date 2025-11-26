@@ -37,7 +37,13 @@ const gujaratCities = [
   "Godhra", "Valsad", "Kheda", "Somnath", "Dwarka", "Mahesana"
 ];
 
-function CityInput({ label, value, onChange }) {
+interface CityInputProps {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+}
+
+function CityInput({ label, value, onChange }: CityInputProps) {
   const [showDropdown, setShowDropdown] = useState(false);
 
   const filteredCities = gujaratCities.filter((city) =>
