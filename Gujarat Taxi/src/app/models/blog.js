@@ -27,7 +27,6 @@ const blogSchema = new mongoose.Schema({
     slug: {
         type: String,
         required: true,
-        unique: true
     },
 
     metaTitle: {
@@ -57,6 +56,7 @@ const blogSchema = new mongoose.Schema({
     },
 }, { timestamps: true })
 
+// Create unique index on slug (only once)
 blogSchema.index({ slug: 1 }, { unique: true });
 const BLOG = mongoose.models.Blog || mongoose.model("Blog", blogSchema);
 
