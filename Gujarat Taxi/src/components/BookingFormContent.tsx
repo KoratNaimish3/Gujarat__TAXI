@@ -21,7 +21,7 @@ interface BookingData {
   time: string;
   passengers: number;
   carType: "sedan" | "suv" | "hatchback";
-  phone: Number | string;
+  phone: string;
 }
 
 interface BookingFormContentProps {
