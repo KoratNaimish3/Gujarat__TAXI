@@ -4,18 +4,25 @@ import React, { useState } from "react";
 import { toast } from "react-toastify";
 import dynamic from "next/dynamic";
 
-// Load CKEditor + ClassicEditor ONLY on the client (no SSR → no window error)
-const Editor = dynamic(
+// Dynamically import both CKEditor and ClassicEditor together with SSR disabled
+const CKEditorWrapper = dynamic(
   async () => {
     const { CKEditor } = await import("@ckeditor/ckeditor5-react");
-    const ClassicEditor = (await import("@ckeditor/ckeditor5-build-classic")).default;
+    const ClassicEditor = (await import("@ckeditor/ckeditor5-build-classic"))
+      .default;
 
-    // Small wrapper component so we can use <Editor ... /> in JSX
-    return function CKEditorWrapper(props: any) {
+    return function EditorComponent(props) {
       return <CKEditor editor={ClassicEditor} {...props} />;
     };
   },
-  { ssr: false }
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-64 border rounded-md p-4 bg-gray-50 flex items-center justify-center">
+        <p className="text-gray-500">Loading editor...</p>
+      </div>
+    ),
+  }
 );
 
 export default function AddBlogPage() {
@@ -28,28 +35,23 @@ export default function AddBlogPage() {
     metaKeywords: "",
     extra_metatag: "",
   });
+  const [image, setImage] = useState(null);
+  const [preview, setPreview] = useState(null);
+  const [loading, setloading] = useState(false);
 
-  const [image, setImage] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] || null;
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
     setImage(file);
 
     if (file) {
       const previewUrl = URL.createObjectURL(file);
       setPreview(previewUrl);
-    } else {
-      setPreview(null);
     }
   };
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
-    setData((prev) => ({ ...prev, [name]: value }));
+    setData({ ...data, [name]: value });
 
     if (name === "title") {
       const slugValue = value
@@ -61,9 +63,9 @@ export default function AddBlogPage() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    setloading(true);
 
     try {
       const formData = new FormData();
@@ -83,15 +85,15 @@ export default function AddBlogPage() {
 
       const result = await res.json();
       if (result.success) {
-        toast.success(result.message || "Blog created successfully");
+        toast.success(result.message);
       } else {
-        toast.error(result.message || "Failed to create blog");
+        toast.error(result.message);
       }
     } catch (error) {
-      console.error("Error in AddBlogPage:", error);
-      toast.error("Something went wrong...");
+      console.log("error in Add_blod..", error);
+      toast.error("something wrong...");
     } finally {
-      setLoading(false);
+      setloading(false);
     }
   };
 
@@ -147,9 +149,9 @@ export default function AddBlogPage() {
         <div>
           <label className="block font-semibold mb-2">Description</label>
           <div className="ckeditor-wrapper">
-            <Editor
+            <CKEditorWrapper
               data={data.description}
-              onChange={(_: any, editor: any) => {
+              onChange={(_, editor) => {
                 const content = editor.getData();
                 setData((prev) => ({ ...prev, description: content }));
               }}
@@ -159,9 +161,7 @@ export default function AddBlogPage() {
 
         {/* SEO Fields */}
         <div className="border-t pt-4 mt-4">
-          <h2 className="text-xl font-bold mb-2 text-gray-700">
-            SEO Metadata
-          </h2>
+          <h2 className="text-xl font-bold mb-2 text-gray-700">SEO Metadata</h2>
 
           <label className="block font-semibold">Meta Title</label>
           <input
@@ -210,6 +210,6 @@ export default function AddBlogPage() {
           {loading ? "Process..." : "Add blog"}
         </button>
       </form>
-    </div>
-  );
+    </div>
+  );
 }

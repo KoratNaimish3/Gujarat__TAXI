@@ -7,8 +7,12 @@ import BookingModal from "@/components/BookingModal";
 
 const poppins = Poppins({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800"],
+  weight: ["400", "500", "600", "700"], // Reduced weights to prevent timeout
   variable: "--font-poppins",
+  display: "swap",
+  preload: false, // Disable preload to prevent timeout errors
+  fallback: ["system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Arial", "sans-serif"],
+  adjustFontFallback: true,
 });
 
 export const metadata: Metadata = {
