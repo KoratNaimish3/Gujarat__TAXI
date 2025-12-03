@@ -458,6 +458,52 @@ a {
   min-height: 300px;
 }
 
+/* CKEditor Dark Mode Styles */
+@media (prefers-color-scheme: dark) {
+  .ckeditor-wrapper .ck-editor__editable {
+    background-color: #1f2937 !important; /* dark:bg-gray-800 */
+    color: #ffffff !important; /* dark:text-white */
+  }
+  
+  .ckeditor-wrapper .ck-editor__editable.ck-focused {
+    border-color: #f97316 !important; /* focus:ring-orange-400 */
+  }
+  
+  .ckeditor-wrapper .ck-toolbar {
+    background-color: #374151 !important; /* dark:bg-gray-700 */
+    border-color: #4b5563 !important; /* dark:border-gray-600 */
+  }
+  
+  .ckeditor-wrapper .ck-toolbar__separator {
+    background-color: #4b5563 !important;
+  }
+  
+  .ckeditor-wrapper .ck-button {
+    color: #e5e7eb !important; /* dark:text-gray-200 */
+  }
+  
+  .ckeditor-wrapper .ck-button:hover:not(.ck-disabled) {
+    background-color: #4b5563 !important; /* dark:hover:bg-gray-600 */
+  }
+  
+  .ckeditor-wrapper .ck-button.ck-on {
+    background-color: #4b5563 !important;
+  }
+  
+  .ckeditor-wrapper .ck-dropdown__panel {
+    background-color: #1f2937 !important;
+    border-color: #4b5563 !important;
+  }
+  
+  .ckeditor-wrapper .ck-list__item {
+    color: #e5e7eb !important;
+  }
+  
+  .ckeditor-wrapper .ck-list__item:hover {
+    background-color: #4b5563 !important;
+  }
+}
+
 /* CKEditor Image Alignment Styles - For Editor View */
 .ck-content figure.image {
   display: table;

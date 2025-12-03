@@ -20,7 +20,7 @@ const CKEditorWrapper = dynamic(
     ssr: false,
     loading: () => (
       <div className="h-64 border rounded-md p-4 bg-gray-50 flex items-center justify-center">
-        <p className="text-gray-500">Loading editor...</p>
+        <p className="text-gray-500 dark:text-black">Loading editor...</p>
       </div>
     ),
   }
@@ -150,7 +150,7 @@ export default function EditBlogPage() {
     return (
       <div className="max-w-3xl mx-auto">
         <div className="text-center py-12">
-          <p className="text-gray-600">Loading blog data...</p>
+          <p className="text-gray-600 dark:text-gray-300 ">Loading blog data...</p>
         </div>
       </div>
     );
@@ -158,43 +158,51 @@ export default function EditBlogPage() {
 
   return (
     <div className="max-w-3xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">Edit Blog</h1>
+      <h1 className="text-3xl font-bold mb-6 dark:text-black">Edit Blog</h1>
 
       <form
         onSubmit={handleSubmit}
         className="bg-white p-6 rounded-xl shadow-md space-y-4"
       >
         <div>
-          <label className="block font-semibold">Title</label>
+          <label className="block font-semibold dark:text-black">Title</label>
           <input
             type="text"
             name="title"
             value={data.title}
             onChange={handleChange}
-            className="w-full border rounded-md p-2"
+            className="w-full border rounded-md p-2 
+                     bg-white text-black border-gray-300 
+                     dark:bg-gray-800 dark:text-white dark:border-gray-600
+                     focus:outline-none focus:ring-2 focus:ring-orange-400"
             required
           />
         </div>
 
         <div>
-          <label className="block font-semibold">Slug</label>
+          <label className="block font-semibold dark:text-black">Slug</label>
           <input
             type="text"
             name="slug"
             value={data.slug}
             onChange={handleChange}
-            className="w-full border rounded-md p-2 bg-gray-100"
+            className="w-full border rounded-md p-2 
+                     bg-gray-100 text-black border-gray-300 
+                     dark:bg-gray-700 dark:text-white dark:border-gray-600"
             readOnly
           />
         </div>
 
         <div>
-          <label className="block font-semibold">Image</label>
+          <label className="block font-semibold dark:text-black">Image</label>
           <input
             type="file"
             accept="image/*"
             onChange={handleImageChange}
-            className="w-full border rounded-md p-2"
+            className="w-full border rounded-md p-2 
+                     bg-white text-black border-gray-300 
+                     dark:bg-gray-800 dark:text-white dark:border-gray-600
+                     focus:outline-none focus:ring-2 focus:ring-orange-400"
           />
           {preview ? (
             <img
@@ -212,55 +220,69 @@ export default function EditBlogPage() {
         </div>
 
         <div>
-          <label className="block font-semibold">Description</label>
-          <CKEditorWrapper
-            data={data.description}
-            onChange={(_, editor) => {
-              const content = editor.getData();
-              setData((prev) => ({ ...prev, description: content }));
-            }}
-          />
+          <label className="block font-semibold dark:text-black">Description</label>
+          <div className="ckeditor-wrapper dark:bg-gray-800">
+            <CKEditorWrapper
+              data={data.description}
+              onChange={(_, editor) => {
+                const content = editor.getData();
+                setData((prev) => ({ ...prev, description: content }));
+              }}
+            />
+          </div>
         </div>
 
         {/* SEO Fields */}
         <div className="border-t pt-4 mt-4">
-          <h2 className="text-xl font-bold mb-2 text-gray-700">SEO Metadata</h2>
+          <h2 className="text-xl font-bold mb-2 text-gray-700 dark:text-black">SEO Metadata</h2>
 
-          <label className="block font-semibold">Meta Title</label>
+          <label className="block font-semibold dark:text-black">Meta Title</label>
           <input
             type="text"
             name="metaTitle"
             value={data.metaTitle}
             onChange={handleChange}
-            className="w-full border rounded-md p-2"
+            className="w-full border rounded-md p-2 
+                     bg-white text-black border-gray-300 
+                     dark:bg-gray-800 dark:text-white dark:border-gray-600
+                     focus:outline-none focus:ring-2 focus:ring-orange-400"
             maxLength={60}
           />
 
-          <label className="block font-semibold mt-3">Meta Description</label>
+          <label className="block font-semibold mt-3 dark:text-black">Meta Description</label>
           <textarea
             name="metaDescription"
             value={data.metaDescription}
             onChange={handleChange}
-            className="w-full border rounded-md p-2 h-20"
+            className="w-full border rounded-md p-2 h-20 
+                     bg-white text-black border-gray-300 
+                     dark:bg-gray-800 dark:text-white dark:border-gray-600
+                     focus:outline-none focus:ring-2 focus:ring-orange-400"
             maxLength={160}
           />
 
-          <label className="block font-semibold mt-3">Meta Keywords</label>
+          <label className="block font-semibold mt-3 dark:text-black">Meta Keywords</label>
           <input
             type="text"
             name="metaKeywords"
             value={data.metaKeywords}
             onChange={handleChange}
             placeholder="travel, gujarat, tourism"
-            className="w-full border rounded-md p-2"
+            className="w-full border rounded-md p-2 
+                     bg-white text-black placeholder-gray-500 border-gray-300 
+                     dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 dark:border-gray-600
+                     focus:outline-none focus:ring-2 focus:ring-orange-400"
           />
 
-          <label className="block font-semibold mt-3">Extra Meta-Tags</label>
+          <label className="block font-semibold mt-3 dark:text-black">Extra Meta-Tags</label>
           <textarea
             name="extra_metatag"
             value={data.extra_metatag}
             onChange={handleChange}
-            className="w-full border rounded-md p-2 h-20"
+            className="w-full border rounded-md p-2 h-20 
+                     bg-white text-black border-gray-300 
+                     dark:bg-gray-800 dark:text-white dark:border-gray-600
+                     focus:outline-none focus:ring-2 focus:ring-orange-400"
             maxLength={160}
           />
         </div>

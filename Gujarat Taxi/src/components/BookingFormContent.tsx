@@ -53,7 +53,7 @@ function CityInput({ label, value, onChange }: CityInputProps) {
 
   return (
     <div className="relative">
-      <label className="block text-sm font-semibold text-gray-700 mb-2">
+      <label className="block text-sm font-semibold text-black mb-2">
         {label}
       </label>
 
@@ -66,12 +66,15 @@ function CityInput({ label, value, onChange }: CityInputProps) {
           setShowDropdown(true);
         }}
         onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
-        className="border-2 p-2 rounded-md w-full"
+        className="border-2 p-2 rounded-md w-full
+                   bg-white text-black placeholder-gray-500 border-gray-300
+                   dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 dark:border-gray-600
+                   focus:outline-none focus:ring-2 focus:ring-orange-400"
         placeholder="Search city…"
       />
 
       {showDropdown && filteredCities.length > 0 && (
-        <ul className="absolute left-0 right-0 bg-white border rounded-md shadow-lg max-h-48 overflow-y-auto z-50 mt-1">
+        <ul className="absolute left-0 right-0 bg-white dark:bg-gray-800 border dark:border-gray-600 rounded-md shadow-lg max-h-48 overflow-y-auto z-50 mt-1">
           {filteredCities.map((city) => (
             <li
               key={city}
@@ -79,7 +82,7 @@ function CityInput({ label, value, onChange }: CityInputProps) {
                 onChange(city);
                 setShowDropdown(false);
               }}
-              className="p-2 hover:bg-orange-100 cursor-pointer"
+              className="p-2 hover:bg-orange-100 dark:hover:bg-gray-700 cursor-pointer text-gray-900 dark:text-gray-200"
             >
               {city}
             </li>
@@ -257,7 +260,7 @@ export default function BookingFormContent({ onSuccess, showHeader = true }: Boo
           <div className="space-y-4 md:space-y-6">
             {/* Trip Type */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-3">
+              <label className="block text-sm font-semibold text-gray-700  mb-3">
                 Trip Type
               </label>
               <div className="grid grid-cols-3 gap-2 md:gap-3">
@@ -274,7 +277,7 @@ export default function BookingFormContent({ onSuccess, showHeader = true }: Boo
                     }
                     className={`p-2 md:p-3 rounded-lg border-2 transition-all duration-300 text-sm md:text-base ${bookingData.tripType === type.id
                         ? "border-orange-500 bg-orange-50 text-orange-700 font-semibold"
-                        : "border-gray-200 hover:border-orange-300"
+                        : "border-gray-200 hover:border-orange-300 dark:border-black dark:text-black"
                       }`}
                   >
                     {type.label}
@@ -304,7 +307,7 @@ export default function BookingFormContent({ onSuccess, showHeader = true }: Boo
             {/* Date & Time */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-700  mb-2">
                   Date
                 </label>
                 <div className="relative">
@@ -314,14 +317,17 @@ export default function BookingFormContent({ onSuccess, showHeader = true }: Boo
                     onChange={(e) =>
                       handleInputChange("date", e.target.value)
                     }
-                    className="border-2 p-2 rounded-md w-full"
+                    className="border-2 p-2 rounded-md w-full
+                               bg-white text-black border-gray-300
+                               dark:bg-gray-800 dark:text-white dark:border-gray-600
+                               focus:outline-none focus:ring-2 focus:ring-orange-400"
                     min={new Date().toISOString().split("T")[0]}
                     required
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-700  mb-2">
                   Time
                 </label>
                 <input
@@ -330,7 +336,10 @@ export default function BookingFormContent({ onSuccess, showHeader = true }: Boo
                   onChange={(e) =>
                     handleInputChange("time", e.target.value)
                   }
-                  className="border-2 p-2 rounded-md w-full"
+                  className="border-2 p-2 rounded-md w-full
+                             bg-white text-black border-gray-300
+                             dark:bg-gray-800 dark:text-white dark:border-gray-600
+                             focus:outline-none focus:ring-2 focus:ring-orange-400"
                   required
                 />
               </div>
@@ -341,7 +350,7 @@ export default function BookingFormContent({ onSuccess, showHeader = true }: Boo
           <div className="space-y-4 md:space-y-6">
             {/* Car Type Selection */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-3">
+              <label className="block text-sm font-semibold text-gray-700  mb-3">
                 Select Car Type
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -381,7 +390,7 @@ export default function BookingFormContent({ onSuccess, showHeader = true }: Boo
               </h3>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-700  mb-2">
                   Enter Mobile Number
                 </label>
                 <input
@@ -393,7 +402,10 @@ export default function BookingFormContent({ onSuccess, showHeader = true }: Boo
                   onChange={(e) =>
                     handleInputChange("phone", e.target.value)
                   }
-                  className="w-full border-2 p-2 rounded-md"
+                  className="w-full border-2 p-2 rounded-md
+                             bg-white text-black placeholder-gray-500 border-gray-300
+                             dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 dark:border-gray-600
+                             focus:outline-none focus:ring-2 focus:ring-orange-400"
                   placeholder="Enter your Mobile Number"
                   required
                 />

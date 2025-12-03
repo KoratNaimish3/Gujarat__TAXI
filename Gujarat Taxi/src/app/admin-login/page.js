@@ -39,7 +39,7 @@ export default function AdminLogin() {
                     <label className="block text-gray-700 text-sm mb-1">Email</label>
                     <input
                         type="email"
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500 bg-white text-black placeholder-gray-500 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 dark:border-gray-600"
                         placeholder="Enter admin email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
@@ -50,7 +50,7 @@ export default function AdminLogin() {
                     <label className="block text-gray-700 text-sm mb-1">Password</label>
                     <input
                         type="password"
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500 bg-white text-black placeholder-gray-500 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 dark:border-gray-600"
                         placeholder="Enter admin password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
