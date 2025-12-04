@@ -60,12 +60,12 @@ function CityInput({ label, value, onChange }: CityInputProps) {
       <input
         type="text"
         value={value}
-        onFocus={() => setShowDropdown(true)}
+        // onFocus={() => setShowDropdown(true)}
         onChange={(e) => {
           onChange(e.target.value);
-          setShowDropdown(true);
+          // setShowDropdown(true);
         }}
-        onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
+        // onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
         className="border-2 p-2 rounded-md w-full
                    bg-white text-black placeholder-gray-500 border-gray-300
                    dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 dark:border-gray-600
@@ -125,6 +125,13 @@ export default function BookingFormContent({ onSuccess, showHeader = true }: Boo
 
   const carTypes = [
     {
+      id: "hatchback",
+      name: "Hatchback",
+      description: "Economical 4-seater car",
+      image: assest.hatchback,
+      price: "₹10/km",
+    },
+    {
       id: "sedan",
       name: "Sedan",
       description: "Comfortable 4-seater car",
@@ -138,13 +145,7 @@ export default function BookingFormContent({ onSuccess, showHeader = true }: Boo
       image: assest.suv,
       price: "₹18/km",
     },
-    {
-      id: "hatchback",
-      name: "Hatchback",
-      description: "Economical 4-seater car",
-      image: assest.hatchback,
-      price: "₹10/km",
-    },
+
   ];
 
   const sendBookingEmail = async (data: BookingData) => {
@@ -244,30 +245,19 @@ export default function BookingFormContent({ onSuccess, showHeader = true }: Boo
   }
 
   return (
-    <div className="p-4 md:p-6 lg:p-8">
-      {showHeader && (
-        <div ref={formRef} className="text-center mb-6 md:mb-8">
-          <p className="text-base md:text-lg text-gray-600 max-w-2xl mx-auto">
-            Fill in the details below and get instant confirmation for your taxi
-            booking
-          </p>
-        </div>
-      )}
+    <div className="p-3 md:p-6 lg:p-8 pb-10 bg-gradient-to-br from-orange-50 to-white">
 
-      <form onSubmit={handleSubmit}>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+      <form onSubmit={handleSubmit} className=" px-3 py-4 rounded-3xl max-md:bg-gradient-to-br max-md: from-orange-100 max-md: to-orange-50">
+        <div className="grid grid-cols-1 gap-6 md:gap-8">
           {/* Left Column */}
           <div className="space-y-4 md:space-y-6">
             {/* Trip Type */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700  mb-3">
-                Trip Type
-              </label>
-              <div className="grid grid-cols-3 gap-2 md:gap-3">
+
+              <div className="flex w-full justify-center items-center  gap-2 md:gap-3">
                 {[
                   { id: "one-way", label: "One Way" },
                   { id: "round-trip", label: "Round Trip" },
-                  { id: "airport", label: "Airport" },
                 ].map((type) => (
                   <button
                     key={type.id}
@@ -275,9 +265,9 @@ export default function BookingFormContent({ onSuccess, showHeader = true }: Boo
                     onClick={() =>
                       handleInputChange("tripType", type.id as any)
                     }
-                    className={`p-2 md:p-3 rounded-lg border-2 transition-all duration-300 text-sm md:text-base ${bookingData.tripType === type.id
-                        ? "border-orange-500 bg-orange-50 text-orange-700 font-semibold"
-                        : "border-gray-200 hover:border-orange-300 dark:border-black dark:text-black"
+                    className={`p-2 md:px-10 rounded-lg border-2 transition-all duration-300 text-sm md:text-base ${bookingData.tripType === type.id
+                      ? "border-orange-500 bg-orange-50 text-orange-700 font-semibold"
+                      : "border-gray-200 hover:border-orange-300 dark:border-black dark:text-black"
                       }`}
                   >
                     {type.label}
@@ -287,13 +277,14 @@ export default function BookingFormContent({ onSuccess, showHeader = true }: Boo
             </div>
 
             {/* From & To */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div>
                 <CityInput
                   label="From (Pickup Location)"
                   value={bookingData.from}
                   onChange={(val) => handleInputChange("from", val)}
                 />
+
               </div>
               <div>
                 <CityInput
@@ -302,17 +293,15 @@ export default function BookingFormContent({ onSuccess, showHeader = true }: Boo
                   onChange={(val) => handleInputChange("to", val)}
                 />
               </div>
-            </div>
 
-            {/* Date & Time */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Date & Time */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700  mb-2">
-                  Date
+                  Date & Time
                 </label>
                 <div className="relative">
                   <input
-                    type="date"
+                    type="datetime-local"
                     value={bookingData.date}
                     onChange={(e) =>
                       handleInputChange("date", e.target.value)
@@ -326,69 +315,6 @@ export default function BookingFormContent({ onSuccess, showHeader = true }: Boo
                   />
                 </div>
               </div>
-              <div>
-                <label className="block text-sm font-semibold text-gray-700  mb-2">
-                  Time
-                </label>
-                <input
-                  type="time"
-                  value={bookingData.time}
-                  onChange={(e) =>
-                    handleInputChange("time", e.target.value)
-                  }
-                  className="border-2 p-2 rounded-md w-full
-                             bg-white text-black border-gray-300
-                             dark:bg-gray-800 dark:text-white dark:border-gray-600
-                             focus:outline-none focus:ring-2 focus:ring-orange-400"
-                  required
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Right Column */}
-          <div className="space-y-4 md:space-y-6">
-            {/* Car Type Selection */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700  mb-3">
-                Select Car Type
-              </label>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                {carTypes.map((car) => (
-                  <button
-                    key={car.id}
-                    type="button"
-                    onClick={() =>
-                      handleInputChange("carType", car.id as any)
-                    }
-                    className={`p-3 md:p-4 rounded-lg border-2 transition-all duration-300 ${bookingData.carType === car.id
-                        ? "border-orange-500 bg-orange-50"
-                        : "border-gray-200 hover:border-orange-300"
-                      }`}
-                  >
-                    <div className="flex flex-col gap-2 items-center justify-center">
-                      <Image
-                        src={car.image}
-                        alt={car.name}
-                        className="w-16 h-10 md:w-20 md:h-12 object-contain"
-                      />
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-gray-900 text-sm md:text-base">
-                          {car.name}
-                        </h3>
-                      </div>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Contact Information */}
-            <div className="space-y-4">
-              <h3 className="text-base md:text-lg font-semibold text-gray-900">
-                Contact Information
-              </h3>
-
               <div>
                 <label className="block text-sm font-semibold text-gray-700  mb-2">
                   Enter Mobile Number
@@ -409,6 +335,44 @@ export default function BookingFormContent({ onSuccess, showHeader = true }: Boo
                   placeholder="Enter your Mobile Number"
                   required
                 />
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column */}
+          <div className="space-y-4 md:space-y-6">
+            {/* Car Type Selection */}
+            <div className="flex flex-col  justify-center items-center">
+              <label className=" text-left text-sm font-semibold text-gray-700  mb-3">
+                Select Car Type
+              </label>
+              <div className="grid grid-cols-1 sm:grid-cols-3 max-sm:flex gap-3">
+                {carTypes.map((car) => (
+                  <button
+                    key={car.id}
+                    type="button"
+                    onClick={() =>
+                      handleInputChange("carType", car.id as any)
+                    }
+                    className={`p-3 md:px-10 rounded-lg border-2 transition-all duration-300 ${bookingData.carType === car.id
+                      ? "border-orange-500 bg-orange-50"
+                      : "border-gray-200 hover:border-orange-300"
+                      }`}
+                  >
+                    <div className="flex flex-col gap-2 items-center justify-center">
+                      <Image
+                        src={car.image}
+                        alt={car.name}
+                        className="w-16 h-10 md:w-20 md:h-12 object-cover"
+                      />
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-gray-900 text-sm md:text-base">
+                          {car.name}
+                        </h3>
+                      </div>
+                    </div>
+                  </button>
+                ))}
               </div>
             </div>
           </div>
