@@ -54,6 +54,7 @@ export async function POST(request: NextRequest) {
       to,
       date,
       time,
+      tripEndDate,
       passengers,
       carType,
       phone,
@@ -131,15 +132,35 @@ export async function POST(request: NextRequest) {
                   <span class="value">${to}</span>
                 </div>
                 <div class="detail-row">
-                  <span class="label">Date:</span>
+                  <span class="label">Trip Start Date:</span>
                   <span class="value">${new Date(date).toLocaleDateString(
-        "en-IN"
+        "en-IN",
+        { year: "numeric", month: "long", day: "numeric" }
       )}</span>
                 </div>
                 <div class="detail-row">
-                  <span class="label">Time:</span>
-                  <span class="value">${time}</span>
+                  <span class="label">Trip Start Time:</span>
+                  <span class="value">${new Date(date).toLocaleTimeString(
+        "en-IN",
+        { hour: "2-digit", minute: "2-digit", hour12: true }
+      )}</span>
                 </div>
+                ${tripType === "round-trip" && tripEndDate ? `
+                <div class="detail-row">
+                  <span class="label">Trip End Date:</span>
+                  <span class="value">${new Date(tripEndDate).toLocaleDateString(
+        "en-IN",
+        { year: "numeric", month: "long", day: "numeric" }
+      )}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="label">Trip End Time:</span>
+                  <span class="value">${new Date(tripEndDate).toLocaleTimeString(
+        "en-IN",
+        { hour: "2-digit", minute: "2-digit", hour12: true }
+      )}</span>
+                </div>
+                ` : ""}
                 <div class="detail-row">
                   <span class="label">Passengers:</span>
                   <span class="value">${passengers}</span>
@@ -172,9 +193,9 @@ Trip Details:
 - Trip Type: ${tripType}
 - From: ${from}
 - To: ${to}
-- Date: ${date}
-- Time: ${time}
-- Passengers: ${passengers}
+- Trip Start Date: ${new Date(date).toLocaleDateString("en-IN", { year: "numeric", month: "long", day: "numeric" })}
+- Trip Start Time: ${new Date(date).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: true })}
+${tripType === "round-trip" && tripEndDate ? `- Trip End Date: ${new Date(tripEndDate).toLocaleDateString("en-IN", { year: "numeric", month: "long", day: "numeric" })}\n- Trip End Time: ${new Date(tripEndDate).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: true })}\n` : ""}- Passengers: ${passengers}
 - Car Type: ${carType}
 
 Please contact the customer to confirm the booking details.

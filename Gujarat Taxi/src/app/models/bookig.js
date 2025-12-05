@@ -7,6 +7,7 @@ const BookingSchema = new mongoose.Schema(
         to: String,
         date: String,
         time: String,
+        tripEndDate: String, 
         passengers: Number,
         carType: String,
         phone: String,

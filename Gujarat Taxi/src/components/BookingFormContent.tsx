@@ -9,9 +9,13 @@ import {
   Car,
   ArrowRight,
   CheckCircle,
+  CalendarCheck,
+  Phone,
 } from "lucide-react";
 import { assest } from "../assest/assest";
 import Image from "next/image";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 interface BookingData {
   tripType: "one-way" | "round-trip" | "airport";
@@ -19,6 +23,7 @@ interface BookingData {
   to: string;
   date: string;
   time: string;
+  tripEndDate: string;
   passengers: number;
   carType: "sedan" | "suv" | "hatchback";
   phone: string;
@@ -42,9 +47,10 @@ interface CityInputProps {
   label: string;
   value: string;
   onChange: (value: string) => void;
+  placeholder?: string;
 }
 
-function CityInput({ label, value, onChange }: CityInputProps) {
+function CityInput({ label, value, onChange, placeholder = "Search city…" }: CityInputProps) {
   const [showDropdown, setShowDropdown] = useState(false);
 
   const filteredCities = gujaratCities.filter((city) =>
@@ -53,25 +59,31 @@ function CityInput({ label, value, onChange }: CityInputProps) {
 
   return (
     <div className="relative">
-      <label className="block text-sm font-semibold text-black mb-2">
-        {label}
-      </label>
+      <div className="relative w-full">
+        {/* Label inside border with white background */}
+        <label className="absolute -top-2 left-4 bg-white px-1 text-sm font-semibold text-gray-700 z-10">
+          {label}
+        </label>
 
-      <input
-        type="text"
-        value={value}
-        // onFocus={() => setShowDropdown(true)}
-        onChange={(e) => {
-          onChange(e.target.value);
-          // setShowDropdown(true);
-        }}
-        // onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
-        className="border-2 p-2 rounded-md w-full
-                   bg-white text-black placeholder-gray-500 border-gray-300
-                   dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 dark:border-gray-600
-                   focus:outline-none focus:ring-2 focus:ring-orange-400"
-        placeholder="Search city…"
-      />
+        {/* Icon inside input */}
+        <div className="absolute left-3 top-1/2 transform -translate-y-1/2 z-20 pointer-events-none">
+          <MapPin className="w-5 h-5 text-gray-400" />
+        </div>
+
+        {/* Input field */}
+        <input
+          type="text"
+          value={value}
+          onChange={(e) => {
+            onChange(e.target.value);
+          }}
+          className="border-2 pl-10 pr-2 h-[48px] rounded-md w-full
+                     bg-white text-black placeholder-gray-500 border-gray-300
+                     dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 dark:border-gray-600
+                     focus:outline-none focus:ring-2 focus:ring-orange-400"
+          placeholder={placeholder}
+        />
+      </div>
 
       {showDropdown && filteredCities.length > 0 && (
         <ul className="absolute left-0 right-0 bg-white dark:bg-gray-800 border dark:border-gray-600 rounded-md shadow-lg max-h-48 overflow-y-auto z-50 mt-1">
@@ -100,6 +112,7 @@ export default function BookingFormContent({ onSuccess, showHeader = true }: Boo
     to: "",
     date: "",
     time: "",
+    tripEndDate: "",
     passengers: 1,
     carType: "sedan",
     phone: "",
@@ -245,9 +258,9 @@ export default function BookingFormContent({ onSuccess, showHeader = true }: Boo
   }
 
   return (
-    <div className="p-3 md:p-6 lg:p-8 pb-10 bg-gradient-to-br from-orange-50 to-white">
+    <div className="p-2 md:p-6 lg:px-28 pb-10 max-md:px-4 bg-gradient-to-br from-orange-50 to-orange-50">
 
-      <form onSubmit={handleSubmit} className=" px-3 py-4 rounded-3xl max-md:bg-gradient-to-br max-md: from-orange-100 max-md: to-orange-50">
+      <form onSubmit={handleSubmit} className="px-3 py-4 rounded-3xl shadow-xl border-4 border-transparent border-l-orange-600 bg-white">
         <div className="grid grid-cols-1 gap-6 md:gap-8">
           {/* Left Column */}
           <div className="space-y-4 md:space-y-6">
@@ -277,64 +290,230 @@ export default function BookingFormContent({ onSuccess, showHeader = true }: Boo
             </div>
 
             {/* From & To */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Mobile Layout (<768px) */}
+            <div className="space-y-4 md:hidden">
+              {/* From - Full width on mobile */}
               <div>
                 <CityInput
-                  label="From (Pickup Location)"
+                  label="From"
                   value={bookingData.from}
                   onChange={(val) => handleInputChange("from", val)}
+                  placeholder="Enter pickup location"
                 />
-
               </div>
+
+              {/* To - Full width on mobile */}
               <div>
                 <CityInput
-                  label="To (Drop Location)"
+                  label="To"
                   value={bookingData.to}
                   onChange={(val) => handleInputChange("to", val)}
+                  placeholder="Enter destination location"
                 />
               </div>
 
-              {/* Date & Time */}
+              {/* Trip Start and Trip End - Side by side on mobile ONLY when round-trip */}
+              {bookingData.tripType === "round-trip" ? (
+                <div className="grid grid-cols-2 gap-4">
+                  {/* Trip Start */}
+                  <div>
+                    <div className="relative w-full">
+                      <div className="relative flex items-center justify-center pl-2 border-2 border-gray-300 rounded-md w-full bg-white dark:bg-gray-800 dark:border-gray-600 focus-within:ring-2 focus-within:ring-orange-400">
+                        <div className="">
+                          <Calendar className="w-5 h-5 text-gray-400" />
+                        </div>
+                        <DatePicker
+                          selected={bookingData.date ? new Date(bookingData.date) : null}
+                          onChange={(date) => {
+                            handleInputChange("date", date?.toISOString() || "");
+                          }}
+                          showTimeSelect
+                          timeFormat="hh:mm aa"
+                          dateFormat="MMMM d, yyyy h:mm aa"
+                          minDate={new Date()}
+                           popperClassName="z-50" // ✅ ensures it appears above everything
+                      popperPlacement="bottom-start" // ✅ opens properly below input
+                      portalId="root-portal" // ✅ renders inside body instead of container
+                          placeholderText="Trip start"
+                          className="w-full pl-10 pr-2 h-[48px] rounded-md bg-transparent text-black dark:text-white outline-none"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Trip End */}
+                  <div>
+                    <div className="relative w-full">
+                      <div className="relative flex items-center justify-center pl-2 border-2 border-gray-300 rounded-md w-full bg-white dark:bg-gray-800 dark:border-gray-600 focus-within:ring-2 focus-within:ring-orange-400">
+                        <div className="">
+                          <Calendar className="w-5 h-5 text-gray-400" />
+                        </div>
+                        <DatePicker
+                          selected={bookingData.tripEndDate ? new Date(bookingData.tripEndDate) : null}
+                          onChange={(date) => {
+                            handleInputChange("tripEndDate", date?.toISOString() || "");
+                          }}
+                          showTimeSelect
+                          timeFormat="hh:mm aa"
+                          dateFormat="MMMM d, yyyy h:mm aa"
+                          minDate={bookingData.date ? new Date(bookingData.date) : new Date()}
+                           popperClassName="z-50" // ✅ ensures it appears above everything
+                      popperPlacement="bottom-start" // ✅ opens properly below input
+                      portalId="root-portal" // ✅ renders inside body instead of container
+                          placeholderText="Trip End"
+                          className="w-full pl-10 pr-2 h-[48px] rounded-md bg-transparent text-black dark:text-white outline-none"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                /* Trip Start - Full width on mobile when one-way */
+                <div>
+                  <div className="relative w-full">
+                    <div className="relative flex items-center justify-center pl-2 border-2 border-gray-300 rounded-md w-full bg-white dark:bg-gray-800 dark:border-gray-600 focus-within:ring-2 focus-within:ring-orange-400">
+                      <div className="">
+                        <Calendar className="w-5 h-5 text-gray-400" />
+                      </div>
+                      <DatePicker
+                        selected={bookingData.date ? new Date(bookingData.date) : null}
+                        onChange={(date) => {
+                          handleInputChange("date", date?.toISOString() || "");
+                        }}
+                        showTimeSelect
+                        timeFormat="hh:mm aa"
+                        dateFormat="MMMM d, yyyy h:mm aa"
+                        minDate={new Date()}
+                         popperClassName="z-50" // ✅ ensures it appears above everything
+                      popperPlacement="bottom-start" // ✅ opens properly below input
+                      portalId="root-portal" // ✅ renders inside body instead of container
+                        placeholderText="Trip start"
+                        className="w-full pl-10 pr-2 h-[48px] rounded-md bg-transparent text-black dark:text-white outline-none"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Mobile Number - Full width on mobile */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700  mb-2">
-                  Date & Time
-                </label>
-                <div className="relative">
+                <div className="relative w-full">
+                  <div className="absolute left-3 top-1/2 transform -translate-y-1/2 z-20 pointer-events-none">
+                    <Phone className="w-5 h-5 text-gray-400" />
+                  </div>
                   <input
-                    type="datetime-local"
-                    value={bookingData.date}
+                    type="tel"
+                    inputMode="numeric"
+                    pattern="[0-9]{10}"
+                    maxLength={10}
+                    value={bookingData.phone}
                     onChange={(e) =>
-                      handleInputChange("date", e.target.value)
+                      handleInputChange("phone", e.target.value)
                     }
-                    className="border-2 p-2 rounded-md w-full
-                               bg-white text-black border-gray-300
-                               dark:bg-gray-800 dark:text-white dark:border-gray-600
+                    className="w-full border-2 pl-10 pr-2 h-[48px] rounded-md
+                               bg-white text-black placeholder-gray-500 border-gray-300
+                               dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 dark:border-gray-600
                                focus:outline-none focus:ring-2 focus:ring-orange-400"
-                    min={new Date().toISOString().split("T")[0]}
+                    placeholder="Mobile Number"
                     required
                   />
                 </div>
               </div>
+            </div>
+
+            {/* Desktop Layout (≥768px) - Original layout unchanged */}
+            <div className={`hidden md:grid gap-4 ${bookingData.tripType === "round-trip" ? "lg:grid-cols-5" : "lg:grid-cols-4"} md:grid-cols-2`}>
               <div>
-                <label className="block text-sm font-semibold text-gray-700  mb-2">
-                  Enter Mobile Number
-                </label>
-                <input
-                  type="tel"
-                  inputMode="numeric"
-                  pattern="[0-9]{10}"
-                  maxLength={10}
-                  value={bookingData.phone}
-                  onChange={(e) =>
-                    handleInputChange("phone", e.target.value)
-                  }
-                  className="w-full border-2 p-2 rounded-md
-                             bg-white text-black placeholder-gray-500 border-gray-300
-                             dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 dark:border-gray-600
-                             focus:outline-none focus:ring-2 focus:ring-orange-400"
-                  placeholder="Enter your Mobile Number"
-                  required
+                <CityInput
+                  label="From"
+                  value={bookingData.from}
+                  onChange={(val) => handleInputChange("from", val)}
+                  placeholder="Enter pickup location"
                 />
+              </div>
+              <div>
+                <CityInput
+                  label="To"
+                  value={bookingData.to}
+                  onChange={(val) => handleInputChange("to", val)}
+                  placeholder="Enter destination location"
+                />
+              </div>
+
+              <div>
+                <div className="relative w-full">
+                  <div className="relative flex items-center justify-center pl-2 border-2 border-gray-300 rounded-md w-full bg-white dark:bg-gray-800 dark:border-gray-600 focus-within:ring-2 focus-within:ring-orange-400">
+                    <div className="">
+                      <Calendar className="w-5 h-5 text-gray-400" />
+                    </div>
+                    <DatePicker
+                      selected={bookingData.date ? new Date(bookingData.date) : null}
+                      onChange={(date) => handleInputChange("date", date?.toISOString() || "")}
+                      showTimeSelect
+                      timeFormat="hh:mm aa"
+                      dateFormat="MMMM d, yyyy h:mm aa"
+                      minDate={new Date()}
+                      placeholderText="Trip start"
+                      popperClassName="z-50" // ✅ ensures it appears above everything
+                      popperPlacement="bottom-start" // ✅ opens properly below input
+                      portalId="root-portal" // ✅ renders inside body instead of container
+                      className="w-full pl-10 pr-2 h-[48px] rounded-md bg-transparent text-black dark:text-white outline-none"
+                    />
+
+                  </div>
+                </div>
+              </div>
+
+              {/* Trip End - Only show for Round Trip */}
+              {bookingData.tripType === "round-trip" && (
+                <div>
+                  <div className="relative w-full">
+                    <div className="relative flex items-center justify-center pl-2 border-2 border-gray-300 rounded-md w-full bg-white dark:bg-gray-800 dark:border-gray-600 focus-within:ring-2 focus-within:ring-orange-400">
+                      <div className="">
+                        <Calendar className="w-5 h-5 text-gray-400" />
+                      </div>
+                      <DatePicker
+                        selected={bookingData.tripEndDate ? new Date(bookingData.tripEndDate) : null}
+                        onChange={(date) => {
+                          handleInputChange("tripEndDate", date?.toISOString() || "");
+                        }}
+                        showTimeSelect
+                        timeFormat="hh:mm aa"
+                        dateFormat="MMMM d, yyyy h:mm aa"
+                        minDate={bookingData.date ? new Date(bookingData.date) : new Date()}
+                        placeholderText="Trip End"
+                         popperClassName="z-50" // ✅ ensures it appears above everything
+                      popperPlacement="bottom-start" // ✅ opens properly below input
+                      portalId="root-portal" // ✅ renders inside body instead of container
+                        className="w-full pl-10 pr-2 h-[48px] rounded-md bg-transparent text-black dark:text-white outline-none"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div>
+                <div className="relative w-full">
+                  <div className="absolute left-3 top-1/2 transform -translate-y-1/2 z-20 pointer-events-none">
+                    <Phone className="w-5 h-5 text-gray-400" />
+                  </div>
+                  <input
+                    type="tel"
+                    inputMode="numeric"
+                    pattern="[0-9]{10}"
+                    maxLength={10}
+                    value={bookingData.phone}
+                    onChange={(e) =>
+                      handleInputChange("phone", e.target.value)
+                    }
+                    className="w-full border-2 pl-10 pr-2 h-[48px] rounded-md
+                               bg-white text-black placeholder-gray-500 border-gray-300
+                               dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 dark:border-gray-600
+                               focus:outline-none focus:ring-2 focus:ring-orange-400"
+                    placeholder="Mobile Number"
+                    required
+                  />
+                </div>
               </div>
             </div>
           </div>

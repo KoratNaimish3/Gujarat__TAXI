@@ -32,8 +32,8 @@ export default function Home() {
   }, []);
 
   return (
-    <div ref={pageRef} className="min-h-screen bg-white">
-      {/* <Navigation /> */}
+    <div ref={pageRef} className=" bg-white">
+      <Navigation />
       <BookingForm />
       {/* <HeroSection /> */}
       <PopularDestinations />

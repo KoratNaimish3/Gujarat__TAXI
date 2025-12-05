@@ -12,6 +12,7 @@ import dwarka from './dwarka.webp'
 import sedan from './sedan.png'
 import suv from './suv.png'
 import hatchback from './hatchback.png'
+import logo from  './logo.png'
 
 export const assest = {
     bhavnagar,
@@ -27,5 +28,6 @@ export const assest = {
     dwarka,
     sedan,
     suv,
-    hatchback
+    hatchback,
+    logo
 }

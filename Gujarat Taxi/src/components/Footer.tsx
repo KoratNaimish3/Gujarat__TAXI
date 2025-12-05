@@ -11,6 +11,8 @@ import {
   Instagram,
   Youtube,
 } from "lucide-react";
+import Image from "next/image";
+import { assest } from "@/assest/assest";
 
 export default function Footer() {
   const footerRef = useRef<HTMLDivElement>(null);
@@ -76,17 +78,18 @@ export default function Footer() {
     <footer id="contact" className="bg-gray-900 text-white">
       <div ref={footerRef} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Main Footer Content */}
-        <div className="py-16">
+        <div className="py-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
             {/* Company Info */}
+            
             <div className="lg:col-span-2">
-              <div className="flex items-center space-x-3 mb-6">
-                <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-xl">GT</span>
-                </div>
+              <div className="flex items-center space-x-2 py-3 ">
                 <div>
-                  <h3 className="text-2xl font-bold">Gujarat Taxi</h3>
-                  <p className="text-orange-400 font-medium">
+                  <Image src={assest.logo} alt="" className="w-12 h-10 object-cover" />
+                </div>
+                <div className="">
+                  <h1 className="leading-7 text-xl font-semibold text-[#98561f]" style={{ fontFamily: "serif" }}>Gujarat Taxi</h1>
+                  <p className="text-md text-[#98561f] font-semibold " style={{ fontFamily: "serif" }}>
                     Khushboo Gujarat Ki
                   </p>
                 </div>
@@ -191,7 +194,7 @@ export default function Footer() {
         </div>
 
         {/* Newsletter Signup */}
-        <div className="border-t border-gray-800 py-8">
+        {/* <div className="border-t border-gray-800 py-8">
           <div className="max-w-4xl mx-auto text-center">
             <h4 className="text-xl font-semibold mb-4">
               Stay Updated with Gujarat Taxi
@@ -211,7 +214,7 @@ export default function Footer() {
               </button>
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* Bottom Footer */}
         <div className="border-t border-gray-800 py-8">

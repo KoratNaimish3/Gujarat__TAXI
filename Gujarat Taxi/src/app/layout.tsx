@@ -45,6 +45,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={poppins.variable}>
       <body className={`${poppins.className} antialiased`}>
+        <div id="root-portal"></div>
         <BookingModalProvider>
           <ToastContainer/>
           {children}

@@ -9,7 +9,7 @@ function Header_Components() {
     <div>
         <Navigation />
         <BookingForm/>
-        <HeroSection/>
+        {/* <HeroSection/> */}
         <PopularDestinations/>
     </div>
   )

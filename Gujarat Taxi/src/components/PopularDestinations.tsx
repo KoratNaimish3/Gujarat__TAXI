@@ -28,7 +28,7 @@ export default function PopularDestinations() {
         targets: containerRef.current,
         opacity: [0, 1],
         translateY: [30, 0],
-        duration: 800,
+        duration: 1000,
         easing: "easeOutExpo",
       });
     }
@@ -38,16 +38,16 @@ export default function PopularDestinations() {
   const marqueeItems = [...destinations, ...destinations];
 
   return (
-    <section className="py-16 bg-gradient-to-r from-orange-500 to-orange-600 overflow-hidden">
+    <section className="py-8 bg-gradient-to-r from-orange-500 to-orange-600 overflow-hidden">
       <div ref={containerRef} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
             Popular Destinations
           </h2>
-          <p className="text-xl text-orange-100 max-w-2xl mx-auto">
+          {/* <p className="text-xl text-orange-100 max-w-2xl mx-auto">
             Explore the beautiful cities and tourist destinations across Gujarat
-          </p>
+          </p> */}
         </div>
 
         {/* ✅ Marquee Section */}
@@ -71,11 +71,11 @@ export default function PopularDestinations() {
         </div>
 
         {/* Info Text */}
-        <div className="text-center mt-12">
+        {/* <div className="text-center mt-12">
           <p className="text-orange-100 text-lg">
             ✨ Book your ride to any destination across Gujarat
           </p>
-        </div>
+        </div> */}
       </div>
     </section>
   );

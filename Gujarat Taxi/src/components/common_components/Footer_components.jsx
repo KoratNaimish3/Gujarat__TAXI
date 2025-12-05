@@ -6,7 +6,7 @@ import TrustSection from '../TrustSection'
 function Footer_Components() {
   return (
     <div>
-        <CommunitySection/>
+        {/* <CommunitySection/> */}
         <TrustSection/>
         <Footer/>
     </div>

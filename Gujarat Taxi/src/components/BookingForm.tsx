@@ -23,11 +23,10 @@ export default function BookingForm() {
   return (
     <section
       id="booking"
-      className="bg-gradient-to-br from-orange-50 to-white mt-20"
     >
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-          <BookingFormContent showHeader={true} />
-        </div>
+      <div className="pb-10">
+        <BookingFormContent showHeader={true} />
+      </div>
     </section>
   );
 }
