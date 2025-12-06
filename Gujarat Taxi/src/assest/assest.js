@@ -9,10 +9,13 @@ import unity from './unity.webp'
 import vadodara from './vadodara.webp'
 import somnath from './Somnath-Temple.webp'
 import dwarka from './dwarka.webp'
-import sedan from './sedan.png'
-import suv from './suv.png'
-import hatchback from './hatchback.png'
-import logo from  './logo.png'
+import sedan from './sedan.webp'
+import suv from './suv.webp'
+import hatchback from './hatchback.webp'
+import logo from  './logo.webp'
+import meme1 from  './meme1.webp'
+import meme2 from  './meme2.webp'
+import meme3 from  './meme3.webp'
 
 export const assest = {
     bhavnagar,
@@ -29,5 +32,8 @@ export const assest = {
     sedan,
     suv,
     hatchback,
-    logo
+    logo,
+    meme1,
+    meme2,
+    meme3,
 }

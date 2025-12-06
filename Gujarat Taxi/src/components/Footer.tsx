@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import anime from "animejs";
 import {
   Phone,
@@ -12,15 +12,21 @@ import {
   Youtube,
 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { assest } from "@/assest/assest";
 
 export default function Footer() {
   const footerRef = useRef<HTMLDivElement>(null);
+  const [showAllRoutes, setShowAllRoutes] = useState(false);
+  const [showAllCities, setShowAllCities] = useState(false);
+  const [showAllAirports, setShowAllAirports] = useState(false);
 
   const footerLinks = {
     quickLinks: [
-      { name: "Home", href: "#home" },
-      { name: "Services", href: "#services" },
+      { name: "Privacy Policy", href: "/privacy-policy" },
+      { name: "Terms of Service", href: "/terms-of-service" },
+      { name: "Cancellation Policy", href: "/cancellation-policy" },
+      { name: "Refund Policy", href: "/refund-policy" },
       { name: "Book a Ride", href: "#booking" },
       { name: "Contact", href: "#contact" },
     ],
@@ -31,16 +37,244 @@ export default function Footer() {
       { name: "Outstation Travel", href: "#" },
     ],
     popularRoutes: [
+      // Ahmedabad Routes
+      { name: "Ahmedabad to Rajkot", href: "#" },
+      { name: "Ahmedabad to Vadodara", href: "#" },
       { name: "Ahmedabad to Surat", href: "#" },
-      { name: "Vadodara to Rajkot", href: "#" },
+      { name: "Ahmedabad to Bhavnagar", href: "#" },
+      { name: "Ahmedabad to Jamnagar", href: "#" },
       { name: "Ahmedabad to Dwarka", href: "#" },
+      { name: "Ahmedabad to Somnath", href: "#" },
+      { name: "Ahmedabad to Junagadh", href: "#" },
+      { name: "Ahmedabad to Porbandar", href: "#" },
+      { name: "Ahmedabad to Gandhinagar", href: "#" },
+      { name: "Ahmedabad to Mehsana", href: "#" },
+      { name: "Ahmedabad to Patan", href: "#" },
+      { name: "Ahmedabad to Palanpur", href: "#" },
+      { name: "Ahmedabad to Bhuj", href: "#" },
+      { name: "Ahmedabad to Kutch", href: "#" },
+      { name: "Ahmedabad to Anjar", href: "#" },
+      { name: "Ahmedabad to Diu", href: "#" },
+      { name: "Ahmedabad to Anand", href: "#" },
+      { name: "Ahmedabad to Nadiad", href: "#" },
+      { name: "Ahmedabad to Bharuch", href: "#" },
+      { name: "Ahmedabad to Navsari", href: "#" },
+      { name: "Ahmedabad to Valsad", href: "#" },
+      { name: "Ahmedabad to Morbi", href: "#" },
+      { name: "Ahmedabad to Surendranagar", href: "#" },
+      { name: "Ahmedabad to Botad", href: "#" },
+      { name: "Ahmedabad to Amreli", href: "#" },
+      { name: "Ahmedabad to Veraval", href: "#" },
+      { name: "Ahmedabad to Gondal", href: "#" },
+      { name: "Ahmedabad to Jetpur", href: "#" },
+      { name: "Ahmedabad to Dahod", href: "#" },
+      { name: "Ahmedabad to Godhra", href: "#" },
+      { name: "Ahmedabad to Himmatnagar", href: "#" },
+      { name: "Ahmedabad to Modasa", href: "#" },
+      { name: "Ahmedabad to Bardoli", href: "#" },
+      { name: "Ahmedabad to Vyara", href: "#" },
+      { name: "Ahmedabad to Mangrol", href: "#" },
+      { name: "Ahmedabad to Una", href: "#" },
+      { name: "Ahmedabad to Keshod", href: "#" },
+      { name: "Ahmedabad to Mandvi", href: "#" },
+      
+      // Surat Routes
+      { name: "Surat to Rajkot", href: "#" },
+      { name: "Surat to Vadodara", href: "#" },
+      { name: "Surat to Bhavnagar", href: "#" },
+      { name: "Surat to Jamnagar", href: "#" },
+      { name: "Surat to Dwarka", href: "#" },
       { name: "Surat to Somnath", href: "#" },
+      { name: "Surat to Junagadh", href: "#" },
+      { name: "Surat to Porbandar", href: "#" },
+      { name: "Surat to Gandhinagar", href: "#" },
+      { name: "Surat to Mehsana", href: "#" },
+      { name: "Surat to Bhuj", href: "#" },
+      { name: "Surat to Anand", href: "#" },
+      { name: "Surat to Nadiad", href: "#" },
+      { name: "Surat to Bharuch", href: "#" },
+      { name: "Surat to Navsari", href: "#" },
+      { name: "Surat to Valsad", href: "#" },
+      { name: "Surat to Morbi", href: "#" },
+      { name: "Surat to Botad", href: "#" },
+      { name: "Surat to Amreli", href: "#" },
+      { name: "Surat to Veraval", href: "#" },
+      { name: "Surat to Gondal", href: "#" },
+      { name: "Surat to Jetpur", href: "#" },
+      { name: "Surat to Bardoli", href: "#" },
+      { name: "Surat to Vyara", href: "#" },
+      { name: "Surat to Mangrol", href: "#" },
+      
+      // Vadodara Routes
+      { name: "Vadodara to Rajkot", href: "#" },
+      { name: "Vadodara to Bhavnagar", href: "#" },
+      { name: "Vadodara to Jamnagar", href: "#" },
+      { name: "Vadodara to Dwarka", href: "#" },
+      { name: "Vadodara to Somnath", href: "#" },
+      { name: "Vadodara to Junagadh", href: "#" },
+      { name: "Vadodara to Porbandar", href: "#" },
+      { name: "Vadodara to Gandhinagar", href: "#" },
+      { name: "Vadodara to Mehsana", href: "#" },
+      { name: "Vadodara to Bhuj", href: "#" },
+      { name: "Vadodara to Anand", href: "#" },
+      { name: "Vadodara to Nadiad", href: "#" },
+      { name: "Vadodara to Bharuch", href: "#" },
+      { name: "Vadodara to Navsari", href: "#" },
+      { name: "Vadodara to Morbi", href: "#" },
+      { name: "Vadodara to Botad", href: "#" },
+      { name: "Vadodara to Amreli", href: "#" },
+      { name: "Vadodara to Veraval", href: "#" },
+      { name: "Vadodara to Gondal", href: "#" },
+      { name: "Vadodara to Jetpur", href: "#" },
+      { name: "Vadodara to Godhra", href: "#" },
+      { name: "Vadodara to Dahod", href: "#" },
+      { name: "Vadodara to Himmatnagar", href: "#" },
+      
+      // Rajkot Routes
+      { name: "Rajkot to Dwarka", href: "#" },
+      { name: "Rajkot to Somnath", href: "#" },
+      { name: "Rajkot to Junagadh", href: "#" },
+      { name: "Rajkot to Porbandar", href: "#" },
+      { name: "Rajkot to Bhavnagar", href: "#" },
+      { name: "Rajkot to Jamnagar", href: "#" },
+      { name: "Rajkot to Gandhinagar", href: "#" },
+      { name: "Rajkot to Mehsana", href: "#" },
+      { name: "Rajkot to Bhuj", href: "#" },
+      { name: "Rajkot to Morbi", href: "#" },
+      { name: "Rajkot to Surendranagar", href: "#" },
+      { name: "Rajkot to Botad", href: "#" },
+      { name: "Rajkot to Amreli", href: "#" },
+      { name: "Rajkot to Veraval", href: "#" },
+      { name: "Rajkot to Gondal", href: "#" },
+      { name: "Rajkot to Jetpur", href: "#" },
+      { name: "Rajkot to Keshod", href: "#" },
+      { name: "Rajkot to Una", href: "#" },
+      
+      // Routes to Nearby States
+      { name: "Ahmedabad to Mumbai", href: "#" },
+      { name: "Ahmedabad to Pune", href: "#" },
+      { name: "Ahmedabad to Nashik", href: "#" },
+      { name: "Ahmedabad to Udaipur", href: "#" },
+      { name: "Ahmedabad to Mount Abu", href: "#" },
+      { name: "Ahmedabad to Jodhpur", href: "#" },
+      { name: "Ahmedabad to Indore", href: "#" },
+      { name: "Ahmedabad to Bhopal", href: "#" },
+      { name: "Ahmedabad to Daman", href: "#" },
+      { name: "Surat to Mumbai", href: "#" },
+      { name: "Surat to Pune", href: "#" },
+      { name: "Surat to Nashik", href: "#" },
+      { name: "Surat to Daman", href: "#" },
+      { name: "Surat to Silvassa", href: "#" },
+      { name: "Vadodara to Mumbai", href: "#" },
+      { name: "Vadodara to Pune", href: "#" },
+      { name: "Vadodara to Nashik", href: "#" },
+      { name: "Vadodara to Indore", href: "#" },
+      { name: "Vadodara to Bhopal", href: "#" },
+      { name: "Vadodara to Udaipur", href: "#" },
+      { name: "Rajkot to Mumbai", href: "#" },
+      { name: "Rajkot to Pune", href: "#" },
+      { name: "Rajkot to Udaipur", href: "#" },
+      { name: "Rajkot to Mount Abu", href: "#" },
+      { name: "Bhavnagar to Mumbai", href: "#" },
+      { name: "Bhavnagar to Udaipur", href: "#" },
+      { name: "Jamnagar to Mumbai", href: "#" },
+      { name: "Jamnagar to Udaipur", href: "#" },
+      { name: "Bhuj to Mumbai", href: "#" },
+      { name: "Bhuj to Udaipur", href: "#" },
+      { name: "Bhuj to Jaisalmer", href: "#" },
+      { name: "Gandhinagar to Mumbai", href: "#" },
+      { name: "Gandhinagar to Udaipur", href: "#" },
+      { name: "Gandhinagar to Mount Abu", href: "#" },
+      { name: "Mehsana to Udaipur", href: "#" },
+      { name: "Palanpur to Udaipur", href: "#" },
+      { name: "Palanpur to Mount Abu", href: "#" },
+      { name: "Palanpur to Jodhpur", href: "#" },
+      { name: "Dahod to Indore", href: "#" },
+      { name: "Dahod to Bhopal", href: "#" },
+      { name: "Godhra to Indore", href: "#" },
+      { name: "Godhra to Bhopal", href: "#" },
+      { name: "Anand to Mumbai", href: "#" },
+      { name: "Nadiad to Mumbai", href: "#" },
+      { name: "Bharuch to Mumbai", href: "#" },
+      { name: "Bharuch to Pune", href: "#" },
+      { name: "Navsari to Mumbai", href: "#" },
+      { name: "Navsari to Daman", href: "#" },
+      { name: "Valsad to Mumbai", href: "#" },
+      { name: "Valsad to Daman", href: "#" },
+      { name: "Valsad to Silvassa", href: "#" },
+      
+      // Additional Inter-city Routes
+      { name: "Bhavnagar to Rajkot", href: "#" },
+      { name: "Bhavnagar to Jamnagar", href: "#" },
+      { name: "Bhavnagar to Dwarka", href: "#" },
+      { name: "Bhavnagar to Somnath", href: "#" },
+      { name: "Jamnagar to Dwarka", href: "#" },
+      { name: "Jamnagar to Porbandar", href: "#" },
+      { name: "Junagadh to Dwarka", href: "#" },
+      { name: "Junagadh to Somnath", href: "#" },
+      { name: "Junagadh to Porbandar", href: "#" },
+      { name: "Dwarka to Somnath", href: "#" },
+      { name: "Dwarka to Porbandar", href: "#" },
+      { name: "Somnath to Porbandar", href: "#" },
+      { name: "Gandhinagar to Mehsana", href: "#" },
+      { name: "Gandhinagar to Patan", href: "#" },
+      { name: "Mehsana to Patan", href: "#" },
+      { name: "Mehsana to Palanpur", href: "#" },
+      { name: "Patan to Palanpur", href: "#" },
+      { name: "Anand to Nadiad", href: "#" },
+      { name: "Anand to Vadodara", href: "#" },
+      { name: "Bharuch to Surat", href: "#" },
+      { name: "Bharuch to Vadodara", href: "#" },
+      { name: "Navsari to Surat", href: "#" },
+      { name: "Valsad to Surat", href: "#" },
+      { name: "Morbi to Rajkot", href: "#" },
+      { name: "Morbi to Jamnagar", href: "#" },
+      { name: "Surendranagar to Rajkot", href: "#" },
+      { name: "Surendranagar to Ahmedabad", href: "#" },
+      { name: "Botad to Bhavnagar", href: "#" },
+      { name: "Botad to Rajkot", href: "#" },
+      { name: "Amreli to Rajkot", href: "#" },
+      { name: "Amreli to Bhavnagar", href: "#" },
+      { name: "Veraval to Junagadh", href: "#" },
+      { name: "Veraval to Somnath", href: "#" },
+      { name: "Gondal to Rajkot", href: "#" },
+      { name: "Jetpur to Rajkot", href: "#" },
+      { name: "Dahod to Vadodara", href: "#" },
+      { name: "Dahod to Ahmedabad", href: "#" },
+      { name: "Godhra to Vadodara", href: "#" },
+      { name: "Godhra to Ahmedabad", href: "#" },
+      { name: "Himmatnagar to Ahmedabad", href: "#" },
+      { name: "Himmatnagar to Udaipur", href: "#" },
+      { name: "Palanpur to Ahmedabad", href: "#" },
+      { name: "Bhuj to Gandhidham", href: "#" },
+      { name: "Bhuj to Mandvi", href: "#" },
+      { name: "Anjar to Bhuj", href: "#" },
+      { name: "Anjar to Gandhidham", href: "#" },
+      { name: "Diu to Veraval", href: "#" },
+      { name: "Diu to Somnath", href: "#" },
+      { name: "Diu to Junagadh", href: "#" },
     ],
     legal: [
-      { name: "Privacy Policy", href: "#" },
-      { name: "Terms of Service", href: "#" },
-      { name: "Cancellation Policy", href: "#" },
-      { name: "Refund Policy", href: "#" },
+      { name: "Privacy Policy", href: "/privacy-policy" },
+      { name: "Terms of Service", href: "/terms-of-service" },
+      { name: "Cancellation Policy", href: "/cancellation-policy" },
+      { name: "Refund Policy", href: "/refund-policy" },
+    ],
+    popularCities: [
+      "Ahmedabad", "Surat", "Vadodara", "Rajkot", "Bhavnagar", "Jamnagar",
+      "Gandhinagar", "Junagadh", "Dwarka", "Somnath", "Porbandar", "Bhuj",
+      "Mehsana", "Palanpur", "Patan", "Anjar", "Kutch", "Diu", "Anand",
+      "Nadiad", "Bharuch", "Navsari", "Valsad", "Morbi", "Surendranagar",
+      "Botad", "Amreli", "Veraval", "Gondal", "Jetpur", "Dahod", "Godhra",
+      "Himmatnagar", "Modasa", "Bardoli", "Vyara", "Mangrol", "Una"
+    ],
+    airports: [
+      "Ahmedabad", "Surat", "Vadodara", "Rajkot", "Bhavnagar", "Bhuj",
+      "Kandla", "Porbandar", "Jamnagar", "Gandhinagar", "Mehsana", 
+      "Junagadh", "Dwarka", "Somnath", "Anand", "Bharuch", "Navsari", 
+      "Valsad", "Morbi", "Surendranagar", "Amreli", "Veraval", "Gondal", 
+      "Jetpur", "Dahod", "Godhra", "Himmatnagar", "Palanpur", "Patan", 
+      "Anjar", "Kutch", "Diu", "Nadiad", "Botad", "Mumbai"
     ],
   };
 
@@ -79,11 +313,11 @@ export default function Footer() {
       <div ref={footerRef} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Main Footer Content */}
         <div className="py-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {/* Company Info */}
             
-            <div className="lg:col-span-2">
-              <div className="flex items-center space-x-2 py-3 ">
+            {/* <div className="lg:col-span-2"> */}
+              {/* <div className="flex items-center space-x-2 py-3 ">
                 <div>
                   <Image src={assest.logo} alt="" className="w-12 h-10 object-cover" />
                 </div>
@@ -93,32 +327,32 @@ export default function Footer() {
                     Khushboo Gujarat Ki
                   </p>
                 </div>
-              </div>
+              </div> */}
 
-              <p className="text-gray-300 mb-6 leading-relaxed">
+              {/* <p className="text-gray-300 mb-6 leading-relaxed">
                 Your trusted partner for reliable, affordable, and comfortable
                 taxi services across Gujarat. Experience the best of Gujarat
                 with our professional drivers and modern fleet.
-              </p>
+              </p> */}
 
               {/* Contact Info */}
-              <div className="space-y-3">
+              {/* <div className="space-y-3">
                 <div className="flex items-center space-x-3">
                   <Phone className="w-5 h-5 text-orange-500" />
                   <span className="text-gray-300">+91 95128 70958</span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <Mail className="w-5 h-5 text-orange-500" />
-                  <span className="text-gray-300">info@gujarattaxi.com</span>
+                  <span className="text-gray-300">info@gujarat.taxi</span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <MapPin className="w-5 h-5 text-orange-500" />
                   <span className="text-gray-300">Gujarat, India</span>
                 </div>
-              </div>
+              </div> */}
 
               {/* Social Links */}
-              <div className="flex space-x-4 mt-6">
+              {/* <div className="flex space-x-4 mt-6">
                 {socialLinks.map((social) => {
                   const IconComponent = social.icon;
                   return (
@@ -131,8 +365,8 @@ export default function Footer() {
                     </a>
                   );
                 })}
-              </div>
-            </div>
+              </div> */}
+            {/* </div> */}
 
             {/* Quick Links */}
             <div>
@@ -154,7 +388,7 @@ export default function Footer() {
             </div>
 
             {/* Services */}
-            <div>
+            {/* <div>
               <h4 className="text-lg font-semibold mb-6 text-orange-400">
                 Our Services
               </h4>
@@ -170,25 +404,97 @@ export default function Footer() {
                   </li>
                 ))}
               </ul>
-            </div>
+            </div> */}
 
             {/* Popular Routes */}
             <div>
               <h4 className="text-lg font-semibold mb-6 text-orange-400">
                 Popular Routes
               </h4>
-              <ul className="space-y-3">
-                {footerLinks.popularRoutes.map((route) => (
-                  <li key={route.name}>
-                    <a
-                      href={route.href}
-                      className="text-gray-300 hover:text-orange-400 transition-colors duration-300 text-sm"
-                    >
-                      {route.name}
-                    </a>
-                  </li>
-                ))}
-              </ul>
+              <div className="space-y-3">
+                {(showAllRoutes
+                  ? footerLinks.popularRoutes
+                  : footerLinks.popularRoutes.slice(0, 5)
+                ).map((route) => {
+                  const routeName = route.name; // e.g., "Ahmedabad to Rajkot"
+                  return (
+                    <div key={route.name} className="space-y-1">
+                      <p className="font-medium text-orange-400 text-sm mb-1">{routeName}</p>
+                      <p className="text-gray-300 hover:text-orange-400 transition-colors duration-300 text-xs leading-relaxed">
+                        <a href="#" className="hover:text-orange-400">One way taxi {routeName}</a> | <a href="#" className="hover:text-orange-400">Round trip {routeName}</a> | <a href="#" className="hover:text-orange-400">{routeName} taxi service</a> | <a href="#" className="hover:text-orange-400">{routeName} Cab service</a>
+                      </p>
+                    </div>
+                  );
+                })}
+                {footerLinks.popularRoutes.length > 5 && (
+                  <button
+                    onClick={() => setShowAllRoutes(!showAllRoutes)}
+                    className="text-orange-400 hover:text-orange-500 transition-colors duration-300 text-sm font-medium mt-2"
+                  >
+                    {showAllRoutes ? "Show less..." : "Read more..."}
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Popular Cities */}
+            <div>
+              <h4 className="text-lg font-semibold mb-6 text-orange-400">
+                Popular Cities
+              </h4>
+              <div className="space-y-3">
+                {(showAllCities
+                  ? footerLinks.popularCities
+                  : footerLinks.popularCities.slice(0, 5)
+                ).map((city) => {
+                  return (
+                    <div key={city} className="space-y-1">
+                      <p className="font-medium text-orange-400 text-sm mb-1">{city}</p>
+                      <p className="text-gray-300 hover:text-orange-400 transition-colors duration-300 text-xs leading-relaxed">
+                        <a href="#" className="hover:text-orange-400">Cab in {city}</a> | <a href="#" className="hover:text-orange-400">Taxi in {city}</a> | <a href="#" className="hover:text-orange-400">Cab service in {city}</a> | <a href="#" className="hover:text-orange-400">Taxi service in {city}</a>
+                      </p>
+                    </div>
+                  );
+                })}
+                {footerLinks.popularCities.length > 5 && (
+                  <button
+                    onClick={() => setShowAllCities(!showAllCities)}
+                    className="text-orange-400 hover:text-orange-500 transition-colors duration-300 text-sm font-medium mt-2"
+                  >
+                    {showAllCities ? "Show less..." : "Read more..."}
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Airport Pick Up & Drop */}
+            <div>
+              <h4 className="text-lg font-semibold mb-6 text-orange-400">
+                Airport Pick Up & Drop
+              </h4>
+              <div className="space-y-3">
+                {(showAllAirports
+                  ? footerLinks.airports
+                  : footerLinks.airports.slice(0, 5)
+                ).map((city) => {
+                  return (
+                    <div key={city} className="space-y-1">
+                      <p className="font-medium text-orange-400 text-sm mb-1">{city}</p>
+                      <p className="text-gray-300 hover:text-orange-400 transition-colors duration-300 text-xs leading-relaxed">
+                        <a href="#" className="hover:text-orange-400">airport taxi {city}</a> | <a href="#" className="hover:text-orange-400">airport cab {city}</a> | <a href="#" className="hover:text-orange-400">{city} airport cab service</a> | <a href="#" className="hover:text-orange-400">{city} airport taxi service</a>
+                      </p>
+                    </div>
+                  );
+                })}
+                {footerLinks.airports.length > 5 && (
+                  <button
+                    onClick={() => setShowAllAirports(!showAllAirports)}
+                    className="text-orange-400 hover:text-orange-500 transition-colors duration-300 text-sm font-medium mt-2"
+                  >
+                    {showAllAirports ? "Show less..." : "Read more..."}
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -216,6 +522,153 @@ export default function Footer() {
           </div>
         </div> */}
 
+        {/* Our Presence Section */}
+        <div className="border-t border-gray-800 py-8">
+          <div className="max-w-7xl mx-auto">
+            <h4 className="text-xl font-semibold mb-6 text-orange-400 text-center">
+              Our Presence - One Way Cab Service & Outstation Taxi Services Across Gujarat
+            </h4>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 text-sm">
+              <div className="text-gray-300">
+                <p className="font-medium text-orange-400 mb-1">Ahmedabad</p>
+                <p className="text-gray-400 text-xs">One Way Cab Service | Outstation</p>
+              </div>
+              <div className="text-gray-300">
+                <p className="font-medium text-orange-400 mb-1">Surat</p>
+                <p className="text-gray-400 text-xs">One Way Taxi Service | Cab Service</p>
+              </div>
+              <div className="text-gray-300">
+                <p className="font-medium text-orange-400 mb-1">Vadodara</p>
+                <p className="text-gray-400 text-xs">One Way Taxi | Outstation Cab</p>
+              </div>
+              <div className="text-gray-300">
+                <p className="font-medium text-orange-400 mb-1">Rajkot</p>
+                <p className="text-gray-400 text-xs">One Way Cab | Taxi Service</p>
+              </div>
+              <div className="text-gray-300">
+                <p className="font-medium text-orange-400 mb-1">Bhavnagar</p>
+                <p className="text-gray-400 text-xs">One Way Taxi Service | Outstation</p>
+              </div>
+              <div className="text-gray-300">
+                <p className="font-medium text-orange-400 mb-1">Jamnagar</p>
+                <p className="text-gray-400 text-xs">One Way Cab Service | Taxi Service</p>
+              </div>
+              <div className="text-gray-300">
+                <p className="font-medium text-orange-400 mb-1">Gandhinagar</p>
+                <p className="text-gray-400 text-xs">One Way Taxi | Cab Service</p>
+              </div>
+              <div className="text-gray-300">
+                <p className="font-medium text-orange-400 mb-1">Junagadh</p>
+                <p className="text-gray-400 text-xs">One Way Cab | Outstation Taxi</p>
+              </div>
+              <div className="text-gray-300">
+                <p className="font-medium text-orange-400 mb-1">Dwarka</p>
+                <p className="text-gray-400 text-xs">One Way Taxi Service | Outstation</p>
+              </div>
+              <div className="text-gray-300">
+                <p className="font-medium text-orange-400 mb-1">Somnath</p>
+                <p className="text-gray-400 text-xs">One Way Cab | Taxi Service</p>
+              </div>
+              <div className="text-gray-300">
+                <p className="font-medium text-orange-400 mb-1">Porbandar</p>
+                <p className="text-gray-400 text-xs">One Way Taxi | Cab Service</p>
+              </div>
+              <div className="text-gray-300">
+                <p className="font-medium text-orange-400 mb-1">Bhuj</p>
+                <p className="text-gray-400 text-xs">One Way Cab Service | Outstation</p>
+              </div>
+              <div className="text-gray-300">
+                <p className="font-medium text-orange-400 mb-1">Mehsana</p>
+                <p className="text-gray-400 text-xs">One Way Taxi Service | Cab Service</p>
+              </div>
+              <div className="text-gray-300">
+                <p className="font-medium text-orange-400 mb-1">Palanpur</p>
+                <p className="text-gray-400 text-xs">One Way Cab | Outstation Taxi</p>
+              </div>
+              <div className="text-gray-300">
+                <p className="font-medium text-orange-400 mb-1">Patan</p>
+                <p className="text-gray-400 text-xs">One Way Taxi | Taxi Service</p>
+              </div>
+              <div className="text-gray-300">
+                <p className="font-medium text-orange-400 mb-1">Anjar</p>
+                <p className="text-gray-400 text-xs">One Way Cab Service | Outstation</p>
+              </div>
+              <div className="text-gray-300">
+                <p className="font-medium text-orange-400 mb-1">Kutch</p>
+                <p className="text-gray-400 text-xs">One Way Taxi Service | Cab Service</p>
+              </div>
+              <div className="text-gray-300">
+                <p className="font-medium text-orange-400 mb-1">Diu</p>
+                <p className="text-gray-400 text-xs">One Way Cab | Outstation Taxi</p>
+              </div>
+              <div className="text-gray-300">
+                <p className="font-medium text-orange-400 mb-1">Anand</p>
+                <p className="text-gray-400 text-xs">One Way Taxi | Cab Service</p>
+              </div>
+              <div className="text-gray-300">
+                <p className="font-medium text-orange-400 mb-1">Nadiad</p>
+                <p className="text-gray-400 text-xs">One Way Cab Service | Taxi Service</p>
+              </div>
+              <div className="text-gray-300">
+                <p className="font-medium text-orange-400 mb-1">Bharuch</p>
+                <p className="text-gray-400 text-xs">One Way Taxi | Outstation</p>
+              </div>
+              <div className="text-gray-300">
+                <p className="font-medium text-orange-400 mb-1">Navsari</p>
+                <p className="text-gray-400 text-xs">One Way Cab | Taxi Service</p>
+              </div>
+              <div className="text-gray-300">
+                <p className="font-medium text-orange-400 mb-1">Valsad</p>
+                <p className="text-gray-400 text-xs">One Way Taxi Service | Outstation Cab</p>
+              </div>
+              <div className="text-gray-300">
+                <p className="font-medium text-orange-400 mb-1">Morbi</p>
+                <p className="text-gray-400 text-xs">One Way Cab | Outstation Taxi</p>
+              </div>
+              <div className="text-gray-300">
+                <p className="font-medium text-orange-400 mb-1">Surendranagar</p>
+                <p className="text-gray-400 text-xs">One Way Taxi | Cab Service</p>
+              </div>
+              <div className="text-gray-300">
+                <p className="font-medium text-orange-400 mb-1">Botad</p>
+                <p className="text-gray-400 text-xs">One Way Cab Service | Outstation</p>
+              </div>
+              <div className="text-gray-300">
+                <p className="font-medium text-orange-400 mb-1">Amreli</p>
+                <p className="text-gray-400 text-xs">One Way Taxi Service | Taxi Service</p>
+              </div>
+              <div className="text-gray-300">
+                <p className="font-medium text-orange-400 mb-1">Veraval</p>
+                <p className="text-gray-400 text-xs">One Way Cab | Outstation Taxi</p>
+              </div>
+              <div className="text-gray-300">
+                <p className="font-medium text-orange-400 mb-1">Gondal</p>
+                <p className="text-gray-400 text-xs">One Way Taxi | Cab Service</p>
+              </div>
+              <div className="text-gray-300">
+                <p className="font-medium text-orange-400 mb-1">Jetpur</p>
+                <p className="text-gray-400 text-xs">One Way Cab Service | Outstation</p>
+              </div>
+              <div className="text-gray-300">
+                <p className="font-medium text-orange-400 mb-1">Dahod</p>
+                <p className="text-gray-400 text-xs">One Way Taxi | Taxi Service</p>
+              </div>
+              <div className="text-gray-300">
+                <p className="font-medium text-orange-400 mb-1">Godhra</p>
+                <p className="text-gray-400 text-xs">One Way Cab | Outstation Cab</p>
+              </div>
+              <div className="text-gray-300">
+                <p className="font-medium text-orange-400 mb-1">Himmatnagar</p>
+                <p className="text-gray-400 text-xs">One Way Taxi Service | Outstation</p>
+              </div>
+            </div>
+            <p className="text-gray-400 text-sm text-center mt-6">
+              Book reliable one way cab service, one way taxi service, and outstation taxi and cab services for intercity travel across all major cities in Gujarat. 
+              Professional drivers, affordable rates, and 24/7 customer support for your one way taxi and one way cab booking needs.
+            </p>
+          </div>
+        </div>
+
         {/* Bottom Footer */}
         <div className="border-t border-gray-800 py-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
@@ -233,22 +686,22 @@ export default function Footer() {
             </div>
 
             {/* Legal Links */}
-            <div className="flex flex-wrap justify-center md:justify-end space-x-6">
+            {/* <div className="flex flex-wrap justify-center md:justify-end space-x-6">
               {footerLinks.legal.map((legal) => (
-                <a
+                <Link
                   key={legal.name}
                   href={legal.href}
                   className="text-gray-400 hover:text-orange-400 transition-colors duration-300 text-sm"
                 >
                   {legal.name}
-                </a>
+                </Link>
               ))}
-            </div>
+            </div> */}
           </div>
         </div>
 
         {/* Payment Methods */}
-        <div className="border-t border-gray-800 py-6">
+        {/* <div className="border-t border-gray-800 py-6">
           <div className="text-center">
             <p className="text-gray-400 text-sm mb-4">We Accept</p>
             <div className="flex justify-center items-center space-x-4">
@@ -269,7 +722,7 @@ export default function Footer() {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
     </footer>
   );

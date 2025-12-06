@@ -34,14 +34,11 @@ export default function PopularDestinations() {
     }
   }, []);
 
-  // Duplicate destinations for seamless looping
-  const marqueeItems = [...destinations, ...destinations];
-
   return (
     <section className="py-8 bg-gradient-to-r from-orange-500 to-orange-600 overflow-hidden">
       <div ref={containerRef} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-12 max-md:mb-5">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
             Popular Destinations
           </h2>
@@ -50,21 +47,23 @@ export default function PopularDestinations() {
           </p> */}
         </div>
 
-        {/* ✅ Marquee Section */}
+        {/* Scrollable Section */}
         <div className="relative overflow-hidden">
-          <div className="flex whitespace-nowrap animate-marquee">
-            {marqueeItems.map((destination, index) => (
+          <div className="flex  md:gap-6 overflow-x-auto scrollbar-hide scroll-smooth pb-2 lg:-mx-8  lg:px-8">
+            {destinations.map((destination, index) => (
               <div
                 key={index}
-                className="flex flex-col justify-center items-center gap-2 text-white mx-6"
+                className="flex flex-col justify-center items-center gap-2 text-white "
+                style={{ minWidth: '110px', width: '110px' }}
               >
                 <Image
                   src={destination.image || ""}
                   alt={destination.name}
-                  className="max-w-24 h-24 rounded-full object-cover"
-
+                  className="w-20 h-20 md:w-24 md:h-24 rounded-full object-cover"
+                  width={96}
+                  height={96}
                 />
-                <p className="text-center">{destination.name}</p>
+                <p className="text-center text-xs md:text-sm whitespace-nowrap">{destination.name}</p>
               </div>
             ))}
           </div>
@@ -80,4 +79,3 @@ export default function PopularDestinations() {
     </section>
   );
 }
-

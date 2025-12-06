@@ -38,9 +38,9 @@ export default function Home() {
       {/* <HeroSection /> */}
       <PopularDestinations />
       {/* <OurServices /> */}
-      {/* <MemeSection /> */}
+      <MemeSection />
       {/* <HowItWorks /> */}
-      {/* <WhyTravelWithUs /> */}
+       {/* <WhyTravelWithUs />  */}
       <TrustSection/>
       {/* <CommunitySection /> */}
       <Footer />

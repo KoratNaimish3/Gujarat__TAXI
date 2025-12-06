@@ -4,11 +4,20 @@ import { useEffect, useRef, useState } from "react";
 import anime from "animejs";
 import { Car, Fuel, Smile, TrendingUp } from "lucide-react";
 import { useBookingModal } from "@/contexts/BookingModalContext";
+import { assest } from "@/assest/assest";
+import Image from "next/image";
 
 export default function MemeSection() {
   const { openModal } = useBookingModal();
   const containerRef = useRef<HTMLDivElement>(null);
   const [currentMeme, setCurrentMeme] = useState(0);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  const memeImages = [
+    { src: assest.meme1, alt: "Meme 1" },
+    { src: assest.meme2, alt: "Meme 2" },
+    { src: assest.meme3, alt: "Meme 3" },
+  ];
 
   const memes = [
     {
@@ -48,96 +57,69 @@ export default function MemeSection() {
       });
     }
 
-    // Auto-rotate memes every 4 seconds
-    const interval = setInterval(() => {
-      setCurrentMeme((prev) => (prev + 1) % memes.length);
-    }, 4000);
+    // Auto-rotate images every 3 seconds
+    const imageInterval = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev + 1) % memeImages.length);
+    }, 3000);
 
-    return () => clearInterval(interval);
-  }, [memes.length]);
+    return () => clearInterval(imageInterval);
+  }, [memeImages.length]);
 
-  useEffect(() => {
-    // Animate meme content change
-    const memeContent = document.querySelector(".meme-content");
-    if (memeContent) {
-      anime({
-        targets: memeContent,
-        opacity: [1, 0],
-        duration: 300,
-        complete: () => {
-          anime({
-            targets: memeContent,
-            opacity: [0, 1],
-            duration: 300,
-          });
-        },
-      });
-    }
-  }, [currentMeme]);
-
-  const currentMemeData = memes[currentMeme];
-  const IconComponent = currentMemeData.icon;
 
   return (
-    <section className="py-16 bg-gradient-to-br from-orange-100 via-white to-orange-50">
+    <section className="py-8 sm:py-12 md:py-16 bg-gradient-to-br from-orange-100 via-white to-orange-50">
       <div
         ref={containerRef}
         className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8"
       >
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+        <div className="text-center mb-6 sm:mb-8 md:mb-12">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
             Travel Vibes 🚗✨
           </h2>
-          <p className="text-lg text-gray-600">
-            Because traveling should be fun, not stressful!
-          </p>
+
         </div>
 
         {/* Meme Banner */}
         <div className="relative">
-          <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12 overflow-hidden">
-            {/* Background Pattern */}
-            <div className="absolute inset-0 opacity-5">
-              <div className="absolute top-4 right-4 text-6xl">🚗</div>
-              <div className="absolute bottom-4 left-4 text-4xl">🏔️</div>
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-8xl">
-                🛣️
+          <div className="relative z-10 overflow-hidden rounded-xl">
+            <div className="relative h-[250px] sm:h-[300px] md:h-[400px] lg:h-[500px] overflow-hidden rounded-xl">
+              <div
+                className="flex h-full transition-transform duration-500 ease-in-out"
+                style={{
+                  transform: `translateX(-${currentImageIndex * 100}%)`,
+                }}
+              >
+                {memeImages.map((image, index) => (
+                  <div
+                    key={index}
+                    className="min-w-full w-full h-full flex-shrink-0 relative flex items-center justify-center bg-white"
+                  >
+                    <Image
+                      src={image.src}
+                      alt={image.alt}
+                      className="w-full h-full object-cover rounded-xl"
+                      fill
+                      priority={index === 0}
+                      sizes="(max-width: 640px) 100vw, (max-width: 768px) 100vw, (max-width: 1024px) 90vw, 1200px"
+                    />
+                  </div>
+                ))}
               </div>
             </div>
 
-            {/* Meme Content */}
-            <div className="relative z-10">
-              <div className="meme-content text-center">
-                {/* Meme Icon */}
-                <div
-                  className={`w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-r ${currentMemeData.color} flex items-center justify-center shadow-lg`}
-                >
-                  <IconComponent className="w-10 h-10 text-white" />
-                </div>
-
-                {/* Meme Text */}
-                <div className="bg-gradient-to-r from-orange-50 to-orange-100 rounded-xl p-6 md:p-8 mb-6">
-                  <p className="text-2xl md:text-3xl font-bold text-gray-800 leading-relaxed">
-                    {currentMemeData.text}
-                  </p>
-                  <div className="text-4xl mt-4">{currentMemeData.emoji}</div>
-                </div>
-
-                {/* Meme Navigation Dots */}
-                <div className="flex justify-center space-x-2">
-                  {memes.map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setCurrentMeme(index)}
-                      className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                        index === currentMeme
-                          ? "bg-orange-500 scale-125"
-                          : "bg-gray-300 hover:bg-gray-400"
-                      }`}
-                    />
-                  ))}
-                </div>
-              </div>
+            {/* Navigation Dots */}
+            <div className="flex justify-center gap-2 mt-3 sm:mt-4">
+              {memeImages.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentImageIndex(index)}
+                  className={`h-1.5 sm:h-2 rounded-full transition-all duration-300 ${index === currentImageIndex
+                      ? "w-6 sm:w-8 bg-orange-500"
+                      : "w-1.5 sm:w-2 bg-gray-300 hover:bg-gray-400"
+                    }`}
+                  aria-label={`Go to slide ${index + 1}`}
+                />
+              ))}
             </div>
           </div>
 
@@ -149,8 +131,12 @@ export default function MemeSection() {
           ></div>
         </div>
 
+        <p className="text-center w-full mt-4 sm:mt-5 text-base sm:text-lg text-gray-600">
+          Because traveling should be fun, not stressful!
+        </p>
+
         {/* Fun Stats */}
-        <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-6">
+        {/* <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-6">
           <div className="text-center">
             <div className="text-3xl mb-2">😊</div>
             <div className="text-sm font-medium text-gray-600">
@@ -171,13 +157,13 @@ export default function MemeSection() {
             <div className="text-3xl mb-2">🎯</div>
             <div className="text-sm font-medium text-gray-600">On Time</div>
           </div>
-        </div>
+        </div> */}
 
         {/* CTA */}
-        <div className="text-center mt-8">
+        <div className="text-center mt-6 sm:mt-8">
           <button
             onClick={openModal}
-            className="btn-primary text-lg px-8 py-4"
+            className="btn-primary text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-4"
           >
             Join the Fun - Book Now! 🚖
           </button>

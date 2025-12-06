@@ -59,7 +59,7 @@ export default function Navigation() {
     //           </div>
     //           <div className="flex items-center space-x-1">
     //             <Mail className="w-4 h-4" />
-    //             <span>info@gujarattaxi.com</span>
+    //             <span>info@gujarat.taxi</span>
     //           </div>
               
     //         </div>
@@ -101,7 +101,7 @@ export default function Navigation() {
     //               </div>
     //               <div className="flex items-center space-x-2">
     //                 <Mail className="w-4 h-4" />
-    //                 <span>info@gujarattaxi.com</span>
+    //                 <span>info@gujarat.taxi</span>
     //               </div>
     //             </div>
     //             <button
