@@ -67,7 +67,6 @@ export default function AllBookings() {
               <th className="p-3 border dark:border-gray-600">Pickup</th>
               <th className="p-3 border dark:border-gray-600">Drop</th>
               <th className="p-3 border dark:border-gray-600">Car Type</th>
-              <th className="p-3 border dark:border-gray-600">Passengers</th>
               <th className="p-3 border dark:border-gray-600">Trip Start</th>
               <th className="p-3 border dark:border-gray-600">Trip End</th>
             </tr>
@@ -92,7 +91,6 @@ export default function AllBookings() {
                   <td className="p-3 border dark:border-gray-600 text-gray-900 dark:text-gray-200">
                     <span className="capitalize">{b.carType || "N/A"}</span>
                   </td>
-                  <td className="p-3 border dark:border-gray-600 text-gray-900 dark:text-gray-200">{b.passengers || "N/A"}</td>
                   <td className="p-3 border dark:border-gray-600 text-gray-900 dark:text-gray-200">
                     {formatDateTime(b.date)}
                   </td>

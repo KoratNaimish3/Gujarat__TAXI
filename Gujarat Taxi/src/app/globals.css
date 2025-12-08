@@ -44,9 +44,97 @@ a {
   text-decoration: none;
 }
 
+/* Force light mode - disable dark mode */
+html {
+  color-scheme: light !important;
+}
+
+/* Force all elements to use light mode styles */
+* {
+  color-scheme: light !important;
+}
+
+/* Override any dark mode styles - ensure everything looks like light mode */
 @media (prefers-color-scheme: dark) {
   html {
-    color-scheme: dark;
+    color-scheme: light !important;
+  }
+  
+  body {
+    background: white !important;
+    color: #000000 !important;
+  }
+  
+  /* Override dark mode classes that might still apply */
+  [class*="dark:bg-gray-800"],
+  .dark\:bg-gray-800 {
+    background-color: white !important;
+  }
+  
+  [class*="dark:text-white"],
+  .dark\:text-white {
+    color: #000000 !important;
+  }
+  
+  [class*="dark:text-gray-200"],
+  .dark\:text-gray-200 {
+    color: #000000 !important;
+  }
+  
+  [class*="dark:text-gray-300"],
+  .dark\:text-gray-300 {
+    color: #374151 !important;
+  }
+  
+  [class*="dark:text-black"],
+  .dark\:text-black {
+    color: #000000 !important;
+  }
+  
+  [class*="dark:border-gray-600"],
+  .dark\:border-gray-600 {
+    border-color: #d1d5db !important;
+  }
+  
+  [class*="dark:hover:bg-gray-700"],
+  .dark\:hover\:bg-gray-700 {
+    background-color: #fef3c7 !important; /* orange-100 equivalent */
+  }
+  
+  [class*="dark:bg-gray-700"],
+  .dark\:bg-gray-700 {
+    background-color: #e5e7eb !important; /* Light gray instead of dark */
+  }
+  
+  [class*="dark:placeholder-gray-400"]::placeholder,
+  .dark\:placeholder-gray-400::placeholder {
+    color: #6b7280 !important;
+  }
+  
+  /* Admin pages specific overrides */
+  table.dark\:bg-gray-800,
+  table[class*="dark:bg-gray-800"] {
+    background-color: white !important;
+  }
+  
+  thead.dark\:bg-gray-700,
+  thead[class*="dark:bg-gray-700"] {
+    background-color: #e5e7eb !important; /* Light gray header */
+  }
+  
+  th.dark\:text-gray-200,
+  th[class*="dark:text-gray-200"] {
+    color: #1f2937 !important; /* Dark text */
+  }
+  
+  td.dark\:text-gray-200,
+  td[class*="dark:text-gray-200"] {
+    color: #1f2937 !important;
+  }
+  
+  tr.dark\:hover\:bg-gray-700,
+  tr[class*="dark:hover:bg-gray-700"]:hover {
+    background-color: #f9fafb !important; /* Light hover */
   }
 }
 
@@ -769,6 +857,7 @@ a {
 /* CKEditor Wrapper Styles */
 .ckeditor-wrapper {
   min-height: 300px;
+  background-color: white !important; /* Force white background */
 }
 
 .ckeditor-wrapper .ck-editor {
@@ -777,51 +866,76 @@ a {
 
 .ckeditor-wrapper .ck-editor__editable {
   min-height: 300px;
+  background-color: white !important; /* Force white background */
+  color: #000000 !important; /* Force black text */
 }
 
-/* CKEditor Dark Mode Styles */
+/* CKEditor - Force Light Mode Styles (Dark Mode Disabled) */
+.ckeditor-wrapper .ck-editor__editable {
+  background-color: #ffffff !important; /* Always white background */
+  color: #000000 !important; /* Always black text */
+}
+
+.ckeditor-wrapper .ck-editor__editable.ck-focused {
+  border-color: #f97316 !important; /* Orange focus border */
+}
+
+.ckeditor-wrapper .ck-toolbar {
+  background-color: #f9fafb !important; /* Light gray toolbar */
+  border-color: #e5e7eb !important; /* Light border */
+}
+
+.ckeditor-wrapper .ck-toolbar__separator {
+  background-color: #e5e7eb !important;
+}
+
+.ckeditor-wrapper .ck-button {
+  color: #1f2937 !important; /* Dark text on light background */
+}
+
+.ckeditor-wrapper .ck-button:hover:not(.ck-disabled) {
+  background-color: #f3f4f6 !important; /* Light gray hover */
+}
+
+.ckeditor-wrapper .ck-button.ck-on {
+  background-color: #f3f4f6 !important;
+}
+
+.ckeditor-wrapper .ck-dropdown__panel {
+  background-color: #ffffff !important;
+  border-color: #e5e7eb !important;
+}
+
+.ckeditor-wrapper .ck-list__item {
+  color: #1f2937 !important;
+}
+
+.ckeditor-wrapper .ck-list__item:hover {
+  background-color: #f3f4f6 !important;
+}
+
+/* Override dark mode for CKEditor */
 @media (prefers-color-scheme: dark) {
   .ckeditor-wrapper .ck-editor__editable {
-    background-color: #1f2937 !important; /* dark:bg-gray-800 */
-    color: #ffffff !important; /* dark:text-white */
-  }
-  
-  .ckeditor-wrapper .ck-editor__editable.ck-focused {
-    border-color: #f97316 !important; /* focus:ring-orange-400 */
+    background-color: #ffffff !important; /* Force white */
+    color: #000000 !important; /* Force black text */
   }
   
   .ckeditor-wrapper .ck-toolbar {
-    background-color: #374151 !important; /* dark:bg-gray-700 */
-    border-color: #4b5563 !important; /* dark:border-gray-600 */
-  }
-  
-  .ckeditor-wrapper .ck-toolbar__separator {
-    background-color: #4b5563 !important;
+    background-color: #f9fafb !important; /* Force light toolbar */
+    border-color: #e5e7eb !important;
   }
   
   .ckeditor-wrapper .ck-button {
-    color: #e5e7eb !important; /* dark:text-gray-200 */
-  }
-  
-  .ckeditor-wrapper .ck-button:hover:not(.ck-disabled) {
-    background-color: #4b5563 !important; /* dark:hover:bg-gray-600 */
-  }
-  
-  .ckeditor-wrapper .ck-button.ck-on {
-    background-color: #4b5563 !important;
+    color: #1f2937 !important;
   }
   
   .ckeditor-wrapper .ck-dropdown__panel {
-    background-color: #1f2937 !important;
-    border-color: #4b5563 !important;
+    background-color: #ffffff !important;
   }
   
   .ckeditor-wrapper .ck-list__item {
-    color: #e5e7eb !important;
-  }
-  
-  .ckeditor-wrapper .ck-list__item:hover {
-    background-color: #4b5563 !important;
+    color: #1f2937 !important;
   }
 }
 

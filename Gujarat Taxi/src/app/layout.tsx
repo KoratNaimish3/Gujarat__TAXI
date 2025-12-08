@@ -26,6 +26,10 @@ export const metadata: Metadata = {
   icons: {
     icon: "/favicon.ico",
   },
+  themeColor: "#ffffff", // Force light theme color
+  other: {
+    "color-scheme": "light",
+  },
   openGraph: {
     title: "Gujarat Taxi - Khushboo Gujarat Ki",
     description:
@@ -46,7 +50,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={poppins.variable}>
+    <html lang="en" className={poppins.variable} style={{ colorScheme: 'light' }}>
       <body className={`${poppins.className} antialiased`}>
         <div id="root-portal"></div>
         <BookingModalProvider>
