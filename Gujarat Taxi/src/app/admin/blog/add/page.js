@@ -156,7 +156,7 @@ export default function AddBlogPage() {
 
         <div>
           <label className="block font-semibold mb-2 dark:text-black">Description</label>
-          <div className="ckeditor-wrapper dark:bg-gray-800">
+          <div className="ckeditor-wrapper dark:bg-gray-800"> 
             <CKEditorWrapper
               data={data.description}
               onChange={(_, editor) => {

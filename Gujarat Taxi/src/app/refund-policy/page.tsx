@@ -159,7 +159,7 @@ export default function RefundPolicy() {
                     To request a refund, please:
                   </p>
                   <ul className="list-disc list-inside ml-4 space-y-2">
-                    <li>Contact our customer service at +91 95128 70958</li>
+                    <li>Contact our customer service at +91 9512870958 </li>
                     <li>Email us at info@gujarat.taxi with your booking reference number</li>
                     <li>Provide details about the reason for refund request</li>
                     <li>Include any supporting documents or evidence if applicable</li>
@@ -265,7 +265,7 @@ export default function RefundPolicy() {
               <div className="mt-4 p-4 bg-gray-50 rounded-lg">
                 <p className="font-medium text-gray-900">Gujarat Taxi</p>
                 <p className="text-gray-700">Email: info@gujarat.taxi</p>
-                <p className="text-gray-700">Phone: +91 95128 70958</p>
+                <p className="text-gray-700">Phone: +91 9512870958 </p>
                 <p className="text-gray-700">Address: Gujarat, India</p>
                 <p className="text-gray-700 mt-2">Customer Service Hours: 24/7</p>
               </div>

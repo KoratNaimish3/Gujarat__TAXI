@@ -172,7 +172,7 @@ export default function TrustSection() {
                             Book Your Ride Now
                         </button>
                         <button className="border-2 border-white text-white hover:bg-white hover:text-orange-600 font-semibold py-3 px-8 rounded-lg transition-all duration-300 transform hover:scale-105">
-                            Call Us: +91 95128 70958
+                            Call Us: +91 9512870958 
                         </button>
                     </div>
                 </div>

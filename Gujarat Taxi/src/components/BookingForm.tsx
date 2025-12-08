@@ -24,7 +24,7 @@ export default function BookingForm() {
     <section
       id="booking"
     >
-      <div className="pb-10">
+      <div className="pb-10 bg-orange-50">
         <BookingFormContent showHeader={true} />
       </div>
     </section>

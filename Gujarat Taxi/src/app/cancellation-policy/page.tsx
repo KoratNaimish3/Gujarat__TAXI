@@ -90,7 +90,7 @@ export default function CancellationPolicy() {
                     You can cancel your booking by:
                   </p>
                   <ul className="list-disc list-inside ml-4 space-y-2 mt-2">
-                    <li>Calling our customer service at +91 95128 70958</li>
+                    <li>Calling our customer service at +91 9512870958 </li>
                     <li>Using the cancellation option in your booking confirmation</li>
                     <li>Sending an email to info@gujarat.taxi with your booking reference number</li>
                   </ul>
@@ -221,7 +221,7 @@ export default function CancellationPolicy() {
               <div className="mt-4 p-4 bg-gray-50 rounded-lg">
                 <p className="font-medium text-gray-900">Gujarat Taxi</p>
                 <p className="text-gray-700">Email: info@gujarat.taxi</p>
-                <p className="text-gray-700">Phone: +91 95128 70958</p>
+                <p className="text-gray-700">Phone: +91 9512870958 </p>
                 <p className="text-gray-700">Address: Gujarat, India</p>
                 <p className="text-gray-700 mt-2">Customer Service Hours: 24/7</p>
               </div>

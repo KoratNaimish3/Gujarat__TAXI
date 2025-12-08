@@ -224,7 +224,7 @@ export default function TermsOfService() {
               <div className="mt-4 p-4 bg-gray-50 rounded-lg">
                 <p className="font-medium text-gray-900">Gujarat Taxi</p>
                 <p className="text-gray-700">Email: info@gujarat.taxi</p>
-                <p className="text-gray-700">Phone: +91 95128 70958</p>
+                <p className="text-gray-700">Phone: +91 9512870958 </p>
                 <p className="text-gray-700">Address: Gujarat, India</p>
               </div>
             </section>

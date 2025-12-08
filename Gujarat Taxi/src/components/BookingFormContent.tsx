@@ -235,23 +235,23 @@ export default function BookingFormContent({ onSuccess, showHeader = true }: Boo
 
   if (isSubmitted) {
     return (
-      <div className="p-6 md:p-8 text-center">
+      <div className="p-6 md:p-8 bg-orange-50 text-center">
         <CheckCircle className="w-16 h-16 md:w-20 md:h-20 text-green-500 mx-auto mb-6" />
-        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
+        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4 ">
           Booking Received!
         </h2>
         <p className="text-base md:text-lg text-gray-600 mb-6 flex flex-col gap-2">
           We have received your booking inquiry from {bookingData.from} to {bookingData.to}, our team will give you a call at {bookingData.phone} as soon as possible.
           <span>Thanks for choosing us for your travel! Have a great travel with Gujarat Taxi.</span>
         </p>
-        <div className="bg-orange-50 rounded-lg p-4 md:p-6 mb-6">
+        <div className="bg-orange-100 rounded-lg p-4 md:p-6 mb-6">
           <h3 className="text-lg md:text-xl font-semibold text-orange-800 mb-2">
             Booking ID
           </h3>
           <p className="text-xl md:text-2xl font-bold text-orange-600">{bookingId}</p>
         </div>
-        <a href="tel:+918799373654" className="btn-primary inline-block">
-          +91 8799373654
+        <a href="tel:+919512870958 " className="btn-primary inline-block">
+          +91 9512870958 
         </a>
       </div>
     );

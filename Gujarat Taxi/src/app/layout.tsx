@@ -23,6 +23,9 @@ export const metadata: Metadata = {
     "Gujarat taxi, Ahmedabad taxi, Surat taxi, Vadodara taxi, Rajkot taxi, airport pickup, outstation travel",
   authors: [{ name: "Wolfron Technologies LLP" }],
   robots: "index, follow",
+  icons: {
+    icon: "/favicon.ico",
+  },
   openGraph: {
     title: "Gujarat Taxi - Khushboo Gujarat Ki",
     description:
