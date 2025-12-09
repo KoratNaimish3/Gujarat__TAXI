@@ -125,13 +125,10 @@ export default function BookingFormContent({ onSuccess, showHeader = true }: Boo
 
   useEffect(() => {
     if (formRef.current) {
-      anime({
-        targets: formRef.current.children,
-        opacity: [0, 1],
-        translateY: [30, 0],
-        duration: 800,
-        delay: anime.stagger(100),
-        easing: "easeOutExpo",
+      // Set immediate visibility - no animation delay
+      const children = Array.from(formRef.current.children) as HTMLElement[];
+      children.forEach(child => {
+        child.style.opacity = '1';
       });
     }
   }, []);
@@ -258,7 +255,7 @@ export default function BookingFormContent({ onSuccess, showHeader = true }: Boo
   }
 
   return (
-    <div className="p-2 md:p-6 lg:px-28 pb-10 max-md:px-4 bg-gradient-to-br from-orange-50 to-orange-50">
+    <div className="p-2 md:p-6 lg:px-28 pb-14 max-md:px-4 bg-gradient-to-br from-orange-50 to-orange-50">
 
       <form onSubmit={handleSubmit} className="px-3 py-4 rounded-3xl shadow-xl border-4 border-transparent border-l-orange-600 bg-white">
         <div className="grid grid-cols-1 gap-6 md:gap-8">

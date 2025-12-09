@@ -20,7 +20,10 @@ export async function GET(req, { params }) {
             );
         }
 
-        const blog = await BLOG.findOne({ slug, status: "published" });
+        const blog = await BLOG.findOne({ slug, status: "published" })
+            .populate('categories', 'name slug')
+            .populate('tags', 'name slug')
+            .populate('authorId', 'userName email');
 
         if (!blog) {
             return NextResponse.json(

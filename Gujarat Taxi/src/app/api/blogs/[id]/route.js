@@ -14,7 +14,10 @@ export async function GET(req, { params }) {
 
         const { id } = await params;
 
-        const blog = await BLOG.findById(id);
+        const blog = await BLOG.findById(id)
+            .populate('categories', 'name slug')
+            .populate('tags', 'name slug')
+            .populate('authorId', 'userName email');
         if (!blog) {
             return NextResponse.json({ success: false, message: "Blog not found" }, { status: 404 });
         }
@@ -58,6 +61,47 @@ export async function PUT(req, { params }) {
         const metaKeywords = formData.get("metaKeywords")
             ?.split(",")
             .map((k) => k.trim());
+        const faqsJson = formData.get("faqs");
+        let faqs = [];
+        if (faqsJson) {
+            try {
+                faqs = JSON.parse(faqsJson);
+                // Filter out empty FAQs
+                faqs = faqs.filter(faq => faq.question && faq.answer);
+            } catch (e) {
+                console.error("Error parsing FAQs:", e);
+                faqs = blog.faqs || [];
+            }
+        } else {
+            faqs = blog.faqs || [];
+        }
+        const categoriesJson = formData.get("categories");
+        let categories = [];
+        if (categoriesJson) {
+            try {
+                categories = JSON.parse(categoriesJson);
+            } catch (e) {
+                console.error("Error parsing categories:", e);
+                categories = blog.categories || [];
+            }
+        } else {
+            categories = blog.categories || [];
+        }
+        const tagsJson = formData.get("tags");
+        let tags = [];
+        if (tagsJson) {
+            try {
+                tags = JSON.parse(tagsJson);
+            } catch (e) {
+                console.error("Error parsing tags:", e);
+                tags = blog.tags || [];
+            }
+        } else {
+            tags = blog.tags || [];
+        }
+        const scheduledAt = formData.get("scheduledAt");
+        const canonicalUrl = formData.get("canonicalUrl");
+        const featuredImageAlt = formData.get("featuredImageAlt");
         const imageFile = formData.get("image");
         const status = formData.get("status") || blog.status;
 
@@ -107,21 +151,44 @@ export async function PUT(req, { params }) {
             publicId = uploadRes.public_id;
         }
 
+        // Prepare update data
+        const updateData = {
+            title: title || blog.title,
+            slug: slug || blog.slug,
+            description: description || blog.description,
+            image: imageUrl,
+            img_publicId: publicId,
+            metaTitle: metaTitle !== null ? metaTitle : blog.metaTitle,
+            metaDescription: metaDescription !== null ? metaDescription : blog.metaDescription,
+            metaKeywords: metaKeywords || blog.metaKeywords,
+            extra_metatag: extra_metatag !== null ? extra_metatag : blog.extra_metatag,
+            faqs: faqs,
+            categories: categories,
+            tags: tags,
+            status: status,
+        };
+
+        if (scheduledAt) {
+            updateData.scheduledAt = new Date(scheduledAt);
+            if (status === "published") {
+                updateData.status = "scheduled";
+            }
+        } else if (scheduledAt === "") {
+            updateData.scheduledAt = null;
+        }
+
+        if (canonicalUrl !== null) {
+            updateData.canonicalUrl = canonicalUrl || null;
+        }
+
+        if (featuredImageAlt !== null) {
+            updateData.featuredImageAlt = featuredImageAlt || "";
+        }
+
         // Update blog
         const updatedBlog = await BLOG.findByIdAndUpdate(
             id,
-            {
-                title: title || blog.title,
-                slug: slug || blog.slug,
-                description: description || blog.description,
-                image: imageUrl,
-                img_publicId: publicId,
-                metaTitle: metaTitle || blog.metaTitle,
-                metaDescription: metaDescription || blog.metaDescription,
-                metaKeywords: metaKeywords || blog.metaKeywords,
-                extra_metatag: extra_metatag || blog.extra_metatag,
-                status: status,
-            },
+            updateData,
             { new: true, runValidators: true }
         );
 

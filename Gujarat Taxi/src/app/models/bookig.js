@@ -11,6 +11,7 @@ const BookingSchema = new mongoose.Schema(
         passengers: Number,
         carType: String,
         phone: String,
+        assignedTo: String, // Field to store assignment/comment
     },
     { timestamps: true }
 );

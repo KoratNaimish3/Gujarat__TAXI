@@ -24,13 +24,8 @@ export default function PopularDestinations() {
 
   useEffect(() => {
     if (containerRef.current) {
-      anime({
-        targets: containerRef.current,
-        opacity: [0, 1],
-        translateY: [30, 0],
-        duration: 1000,
-        easing: "easeOutExpo",
-      });
+      // Set immediate visibility - no delay
+      containerRef.current.style.opacity = '1';
     }
   }, []);
 

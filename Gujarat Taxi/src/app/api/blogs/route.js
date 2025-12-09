@@ -23,6 +23,39 @@ export async function POST(req) {
         const metaKeywords = (formData.get("metaKeywords"))
             ?.split(",")
             .map((k) => k.trim());
+        const faqsJson = formData.get("faqs");
+        let faqs = [];
+        if (faqsJson) {
+            try {
+                faqs = JSON.parse(faqsJson);
+                // Filter out empty FAQs
+                faqs = faqs.filter(faq => faq.question && faq.answer);
+            } catch (e) {
+                console.error("Error parsing FAQs:", e);
+            }
+        }
+        const categoriesJson = formData.get("categories");
+        let categories = [];
+        if (categoriesJson) {
+            try {
+                categories = JSON.parse(categoriesJson);
+            } catch (e) {
+                console.error("Error parsing categories:", e);
+            }
+        }
+        const tagsJson = formData.get("tags");
+        let tags = [];
+        if (tagsJson) {
+            try {
+                tags = JSON.parse(tagsJson);
+            } catch (e) {
+                console.error("Error parsing tags:", e);
+            }
+        }
+        const scheduledAt = formData.get("scheduledAt");
+        const canonicalUrl = formData.get("canonicalUrl");
+        const featuredImageAlt = formData.get("featuredImageAlt");
+        const status = formData.get("status") || "draft";
         const imageFile = formData.get("image")
 
 
@@ -63,7 +96,7 @@ export async function POST(req) {
             console.log(publicId)
 
 
-            const newBlog = await BLOG.create({
+            const blogData = {
                 title,
                 slug,
                 image: imageUrl,
@@ -73,8 +106,25 @@ export async function POST(req) {
                 metaDescription,
                 metaKeywords,
                 extra_metatag,
-                status: "published",
-            });
+                faqs: faqs,
+                categories: categories || [],
+                tags: tags || [],
+                status: status,
+                featuredImageAlt: featuredImageAlt || "",
+            };
+
+            if (scheduledAt) {
+                blogData.scheduledAt = new Date(scheduledAt);
+                if (status === "published") {
+                    blogData.status = "scheduled";
+                }
+            }
+
+            if (canonicalUrl) {
+                blogData.canonicalUrl = canonicalUrl;
+            }
+
+            const newBlog = await BLOG.create(blogData);
 
             console.log(publicId)
 
@@ -97,12 +147,18 @@ export async function GET() {
         await connectDB();
 
         const blogs = await BLOG.find().sort({ createdAt: -1 });
-        const totalBlogs = await BLOG.countDocuments(); 
+        const totalBlogs = await BLOG.countDocuments();
+        const publishedCount = await BLOG.countDocuments({ status: "published" });
+        const scheduledCount = await BLOG.countDocuments({ status: "scheduled" });
+        const draftCount = await BLOG.countDocuments({ status: "draft" });
 
         return NextResponse.json(
             { 
                 blogs, 
                 totalBlogs,
+                publishedCount,
+                scheduledCount,
+                draftCount,
                 success: true 
             }, 
             { 

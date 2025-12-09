@@ -48,11 +48,67 @@ const blogSchema = new mongoose.Schema({
         type: String,
     },
 
-    // Publish / Draft
+    // Publish / Draft / Scheduled / Archived
     status: {
         type: String,
-        enum: ["draft", "published"],
+        enum: ["draft", "scheduled", "published", "archived"],
         default: "draft",
+    },
+
+    // FAQs array
+    faqs: {
+        type: [
+            {
+                question: {
+                    type: String,
+                    required: true,
+                },
+                answer: {
+                    type: String,
+                    required: true,
+                },
+            }
+        ],
+        default: [],
+    },
+
+    // Categories (many-to-many)
+    categories: {
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: "Category",
+        default: [],
+    },
+
+    // Tags (many-to-many)
+    tags: {
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: "Tag",
+        default: [],
+    },
+
+    // Scheduling
+    scheduledAt: {
+        type: Date,
+        default: null,
+    },
+
+    // Canonical URL
+    canonicalUrl: {
+        type: String,
+        default: null,
+    },
+
+    // Author reference
+    authorId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Admin",
+        default: null,
+    },
+
+    // Featured image alt text
+    featuredImageAlt: {
+        type: String,
+        default: "",
     },
 }, { timestamps: true })
 

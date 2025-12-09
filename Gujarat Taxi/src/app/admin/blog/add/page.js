@@ -25,6 +25,8 @@ const CKEditorWrapper = dynamic(
   }
 );
 
+import EditorSidebar from "@/components/editor/EditorSidebar";
+
 export default function AddBlogPage() {
   const [data, setData] = useState({
     title: "",
@@ -34,10 +36,40 @@ export default function AddBlogPage() {
     metaDescription: "",
     metaKeywords: "",
     extra_metatag: "",
+    faqs: [],
+    categories: [],
+    tags: [],
+    scheduledAt: "",
+    canonicalUrl: "",
+    featuredImageAlt: "",
+    status: "draft",
   });
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
   const [loading, setloading] = useState(false);
+
+  const addFAQ = () => {
+    setData(prev => ({
+      ...prev,
+      faqs: [...prev.faqs, { question: "", answer: "" }]
+    }));
+  };
+
+  const removeFAQ = (index) => {
+    setData(prev => ({
+      ...prev,
+      faqs: prev.faqs.filter((_, i) => i !== index)
+    }));
+  };
+
+  const updateFAQ = (index, field, value) => {
+    setData(prev => ({
+      ...prev,
+      faqs: prev.faqs.map((faq, i) => 
+        i === index ? { ...faq, [field]: value } : faq
+      )
+    }));
+  };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -64,7 +96,7 @@ export default function AddBlogPage() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     setloading(true);
 
     try {
@@ -76,6 +108,13 @@ export default function AddBlogPage() {
       formData.append("metaDescription", data.metaDescription);
       formData.append("metaKeywords", data.metaKeywords);
       formData.append("extra_metatag", data.extra_metatag);
+      formData.append("faqs", JSON.stringify(data.faqs));
+      formData.append("categories", JSON.stringify(data.categories));
+      formData.append("tags", JSON.stringify(data.tags));
+      formData.append("status", data.status);
+      if (data.scheduledAt) formData.append("scheduledAt", data.scheduledAt);
+      if (data.canonicalUrl) formData.append("canonicalUrl", data.canonicalUrl);
+      if (data.featuredImageAlt) formData.append("featuredImageAlt", data.featuredImageAlt);
       if (image) formData.append("image", image);
 
       const res = await fetch("/api/blogs", {
@@ -98,13 +137,13 @@ export default function AddBlogPage() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6 dark:text-black">Add New Blog</h1>
+    <div className="w-full">
+      <h1 className="text-2xl md:text-3xl font-bold mb-6 dark:text-black">Add New Blog</h1>
 
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-6 rounded-xl shadow-md space-y-4"
-      >
+      <div className="flex flex-col lg:flex-row gap-6">
+        {/* Main Content Area - 70% */}
+        <div className="flex-1 bg-white p-6 rounded-xl shadow-md space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block font-semibold dark:text-black">Title</label>
           <input
@@ -134,25 +173,6 @@ export default function AddBlogPage() {
           />
         </div>
 
-        <div>
-          <label className="block font-semibold dark:text-black">Image</label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageChange}
-            className="w-full border rounded-md p-2 
-                     bg-white text-black border-gray-300 
-                     dark:bg-gray-800 dark:text-white dark:border-gray-600
-                     focus:outline-none focus:ring-2 focus:ring-orange-400"
-          />
-          {preview && (
-            <img
-              src={preview}
-              alt="preview"
-              className="w-40 h-40 mt-2 rounded-lg object-cover"
-            />
-          )}
-        </div>
 
         <div>
           <label className="block font-semibold mb-2 dark:text-black">Description</label>
@@ -165,6 +185,62 @@ export default function AddBlogPage() {
               }}
             />
           </div>
+        </div>
+
+
+        {/* FAQs Section */}
+        <div className="border-t pt-4 mt-4">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-bold text-gray-700 dark:text-black">FAQs</h2>
+            <button
+              type="button"
+              onClick={addFAQ}
+              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-semibold"
+            >
+              + Add FAQ
+            </button>
+          </div>
+
+          {data.faqs.map((faq, index) => (
+            <div key={index} className="mb-4 p-4 border border-gray-300 rounded-lg bg-gray-50">
+              <div className="flex justify-between items-center mb-2">
+                <label className="block font-semibold text-sm dark:text-black">
+                  FAQ {index + 1}
+                </label>
+                <button
+                  type="button"
+                  onClick={() => removeFAQ(index)}
+                  className="text-red-600 hover:text-red-800 text-sm font-semibold"
+                >
+                  Remove
+                </button>
+              </div>
+              <input
+                type="text"
+                placeholder="Enter question..."
+                value={faq.question}
+                onChange={(e) => updateFAQ(index, "question", e.target.value)}
+                className="w-full border rounded-md p-2 mb-2 
+                         bg-white text-black border-gray-300 
+                         dark:bg-gray-800 dark:text-white dark:border-gray-600
+                         focus:outline-none focus:ring-2 focus:ring-orange-400"
+              />
+              <textarea
+                placeholder="Enter answer..."
+                value={faq.answer}
+                onChange={(e) => updateFAQ(index, "answer", e.target.value)}
+                rows="3"
+                className="w-full border rounded-md p-2 
+                         bg-white text-black border-gray-300 
+                         dark:bg-gray-800 dark:text-white dark:border-gray-600
+                         focus:outline-none focus:ring-2 focus:ring-orange-400"
+              />
+            </div>
+          ))}
+
+          {data.faqs.length === 0 && (
+            <p className="text-gray-500 text-sm italic">No FAQs added yet. Click "Add FAQ" to add one.</p>
+          )}
         </div>
 
         <div className="border-t pt-4 mt-4">
@@ -221,14 +297,24 @@ export default function AddBlogPage() {
           />
         </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-2 rounded-lg font-semibold"
-        >
-          {loading ? "Process..." : "Add blog"}
-        </button>
-      </form>
+          </form>
+        </div>
+
+        {/* Sidebar - 30% */}
+        <div className="w-full lg:w-80 xl:w-96">
+          <EditorSidebar
+            data={data}
+            setData={setData}
+            image={image}
+            preview={preview}
+            existingImage={null}
+            onImageChange={handleImageChange}
+            onSubmit={handleSubmit}
+            loading={loading}
+            isEdit={false}
+          />
+        </div>
+      </div>
     </div>
   );
 }

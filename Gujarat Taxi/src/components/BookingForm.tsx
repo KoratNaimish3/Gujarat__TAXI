@@ -9,13 +9,10 @@ export default function BookingForm() {
 
   useEffect(() => {
     if (formRef.current) {
-      anime({
-        targets: formRef.current.children,
-        opacity: [0, 1],
-        translateY: [30, 0],
-        duration: 800,
-        delay: anime.stagger(100),
-        easing: "easeOutExpo",
+      // Set immediate visibility
+      const children = Array.from(formRef.current.children) as HTMLElement[];
+      children.forEach(child => {
+        child.style.opacity = '1';
       });
     }
   }, []);
@@ -24,7 +21,7 @@ export default function BookingForm() {
     <section
       id="booking"
     >
-      <div className="pb-10 bg-orange-50">
+      <div className=" bg-gray-50">
         <BookingFormContent showHeader={true} />
       </div>
     </section>

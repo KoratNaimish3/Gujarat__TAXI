@@ -11,13 +11,19 @@ export async function GET() {
     await connectDB();
 
     const bookings = await Booking.find().sort({ createdAt: -1 });
-    const totalBookings = await Booking.countDocuments()
+    const totalBookings = await Booking.countDocuments();
+    
+    // Count bookings by trip type
+    const oneWayCount = await Booking.countDocuments({ tripType: "one-way" });
+    const roundTripCount = await Booking.countDocuments({ tripType: "round-trip" });
 
     return NextResponse.json(
       { 
         success: true, 
         bookings, 
-        totalBookings 
+        totalBookings,
+        oneWayCount,
+        roundTripCount,
       },
       { 
         status: 200,

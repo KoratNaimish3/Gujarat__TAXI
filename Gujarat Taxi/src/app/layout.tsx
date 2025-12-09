@@ -4,6 +4,7 @@ import "./globals.css";
 import { ToastContainer } from "react-toastify";
 import { BookingModalProvider } from "@/contexts/BookingModalContext";
 import BookingModal from "@/components/BookingModal";
+import ScrollToTop from "@/components/ScrollToTop";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -51,12 +52,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={poppins.variable} style={{ colorScheme: 'light' }}>
-      <body className={`${poppins.className} antialiased`}>
+      <body className={`${poppins.className} bg-orange-50 antialiased`}>
         <div id="root-portal"></div>
         <BookingModalProvider>
           <ToastContainer/>
           {children}
           <BookingModal />
+          <ScrollToTop />
         </BookingModalProvider>
       </body>
     </html>

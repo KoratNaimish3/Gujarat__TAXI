@@ -18,14 +18,20 @@ export default function Home() {
   const pageRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Initialize animations when page loads
+    // Initialize animations when page loads - instant display, no delays
     if (pageRef.current) {
+      // Set initial opacity to 1 for immediate visibility
+      const children = Array.from(pageRef.current.children) as HTMLElement[];
+      children.forEach(child => {
+        child.style.opacity = '1';
+      });
+      
+      // Optional: Subtle animation without delay
       anime({
         targets: pageRef.current.children,
-        opacity: [0, 1],
-        translateY: [30, 0],
-        duration: 800,
-        delay: anime.stagger(200),
+        opacity: [1, 1],
+        translateY: [0, 0],
+        duration: 0,
         easing: "easeOutExpo",
       });
     }

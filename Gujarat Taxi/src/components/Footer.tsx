@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import anime from "animejs";
 import {
   Phone,
@@ -17,9 +17,6 @@ import { assest } from "@/assest/assest";
 
 export default function Footer() {
   const footerRef = useRef<HTMLDivElement>(null);
-  const [showAllRoutes, setShowAllRoutes] = useState(false);
-  const [showAllCities, setShowAllCities] = useState(false);
-  const [showAllAirports, setShowAllAirports] = useState(false);
 
   const footerLinks = {
     quickLinks: [
@@ -411,11 +408,8 @@ export default function Footer() {
               <h4 className="text-lg font-semibold mb-6 text-orange-400">
                 Popular Routes
               </h4>
-              <div className="space-y-3">
-                {(showAllRoutes
-                  ? footerLinks.popularRoutes
-                  : footerLinks.popularRoutes.slice(0, 5)
-                ).map((route) => {
+              <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2 footer-scrollbar">
+                {footerLinks.popularRoutes.map((route) => {
                   const routeName = route.name; // e.g., "Ahmedabad to Rajkot"
                   return (
                     <div key={route.name} className="space-y-1">
@@ -426,14 +420,6 @@ export default function Footer() {
                     </div>
                   );
                 })}
-                {footerLinks.popularRoutes.length > 5 && (
-                  <button
-                    onClick={() => setShowAllRoutes(!showAllRoutes)}
-                    className="text-orange-400 hover:text-orange-500 transition-colors duration-300 text-sm font-medium mt-2"
-                  >
-                    {showAllRoutes ? "Show less..." : "Read more..."}
-                  </button>
-                )}
               </div>
             </div>
 
@@ -442,11 +428,8 @@ export default function Footer() {
               <h4 className="text-lg font-semibold mb-6 text-orange-400">
                 Popular Cities
               </h4>
-              <div className="space-y-3">
-                {(showAllCities
-                  ? footerLinks.popularCities
-                  : footerLinks.popularCities.slice(0, 5)
-                ).map((city) => {
+              <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2 footer-scrollbar">
+                {footerLinks.popularCities.map((city) => {
                   return (
                     <div key={city} className="space-y-1">
                       <p className="font-medium text-orange-400 text-sm mb-1">{city}</p>
@@ -456,14 +439,6 @@ export default function Footer() {
                     </div>
                   );
                 })}
-                {footerLinks.popularCities.length > 5 && (
-                  <button
-                    onClick={() => setShowAllCities(!showAllCities)}
-                    className="text-orange-400 hover:text-orange-500 transition-colors duration-300 text-sm font-medium mt-2"
-                  >
-                    {showAllCities ? "Show less..." : "Read more..."}
-                  </button>
-                )}
               </div>
             </div>
 
@@ -472,11 +447,8 @@ export default function Footer() {
               <h4 className="text-lg font-semibold mb-6 text-orange-400">
                 Airport Pick Up & Drop
               </h4>
-              <div className="space-y-3">
-                {(showAllAirports
-                  ? footerLinks.airports
-                  : footerLinks.airports.slice(0, 5)
-                ).map((city) => {
+              <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2 footer-scrollbar">
+                {footerLinks.airports.map((city) => {
                   return (
                     <div key={city} className="space-y-1">
                       <p className="font-medium text-orange-400 text-sm mb-1">{city}</p>
@@ -486,14 +458,6 @@ export default function Footer() {
                     </div>
                   );
                 })}
-                {footerLinks.airports.length > 5 && (
-                  <button
-                    onClick={() => setShowAllAirports(!showAllAirports)}
-                    className="text-orange-400 hover:text-orange-500 transition-colors duration-300 text-sm font-medium mt-2"
-                  >
-                    {showAllAirports ? "Show less..." : "Read more..."}
-                  </button>
-                )}
               </div>
             </div>
           </div>

@@ -14,8 +14,8 @@ export default function MemeSection() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const memeImages = [
-    { src: assest.meme1, alt: "Meme 1" },
-    { src: assest.meme2, alt: "Meme 2" },
+    { src: assest.img1, alt: "Meme 1" },
+    { src: assest.img2, alt: "Meme 2" },
     { src: assest.meme3, alt: "Meme 3" },
   ];
 
@@ -48,13 +48,8 @@ export default function MemeSection() {
 
   useEffect(() => {
     if (containerRef.current) {
-      anime({
-        targets: containerRef.current,
-        opacity: [0, 1],
-        translateY: [30, 0],
-        duration: 800,
-        easing: "easeOutExpo",
-      });
+      // Set immediate visibility - no delay
+      containerRef.current.style.opacity = '1';
     }
 
     // Auto-rotate images every 3 seconds
@@ -80,9 +75,9 @@ export default function MemeSection() {
         </div>
 
         {/* Meme Banner */}
-        <div className="relative">
-          <div className="relative z-10 overflow-hidden rounded-xl">
-            <div className="relative h-[250px] sm:h-[300px] md:h-[400px] lg:h-[500px] overflow-hidden rounded-xl">
+        <div className="relative ">
+          <div className="relative z-10 overflow-hidden rounded-xl  ">
+            <div className="relative h-[300px] sm:h-[300px] md:h-[400px] lg:h-[500px]  py-2 sm:py-4 md:py-7 overflow-hidden rounded-xl">
               <div
                 className="flex h-full transition-transform duration-500 ease-in-out"
                 style={{
@@ -92,16 +87,20 @@ export default function MemeSection() {
                 {memeImages.map((image, index) => (
                   <div
                     key={index}
-                    className="min-w-full w-full h-full flex-shrink-0 relative flex items-center justify-center bg-white"
+                    className="min-w-full w-full h-full flex-shrink-0 relative flex items-center justify-center px-2"
                   >
-                    <Image
-                      src={image.src}
-                      alt={image.alt}
-                      className="w-full h-full object-cover rounded-xl"
-                      fill
-                      priority={index === 0}
-                      sizes="(max-width: 640px) 100vw, (max-width: 768px) 100vw, (max-width: 1024px) 90vw, 1200px"
-                    />
+                    <div className="relative w-auto max-w-full h-full max-h-full flex items-center justify-center">
+                      <Image
+                        src={image.src}
+                        alt={image.alt}
+                        className="max-w-full max-h-full w-auto h-auto object-contain rounded-xl border-2 border-orange-500"
+                        style={{ borderRadius: '0.75rem' }}
+                        width={1200}
+                        height={600}
+                        priority={index === 0}
+                        sizes="(max-width: 640px) 100vw, (max-width: 768px) 100vw, (max-width: 1024px) 90vw, 1200px"
+                      />
+                    </div>
                   </div>
                 ))}
               </div>

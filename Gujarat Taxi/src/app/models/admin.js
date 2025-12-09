@@ -18,6 +18,18 @@ const adminSchema = new mongoose.Schema({
         required: true,
     },
 
+    role: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Role",
+        default: null,
+    },
+
+    // For backward compatibility, also store role slug
+    roleSlug: {
+        type: String,
+        default: "admin", // Default role
+    },
+
 }, { timestamps: true });
 
 
