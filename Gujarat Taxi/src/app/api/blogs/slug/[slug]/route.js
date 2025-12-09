@@ -2,6 +2,10 @@ import { NextResponse } from "next/server";
 import connectDB from "../../../../lib/db";
 import BLOG from "../../../../models/blog";
 
+// Force dynamic rendering - disable caching
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 // GET /api/blogs/slug/[slug] → Get blog by slug
 export async function GET(req, { params }) {
     try {
@@ -25,7 +29,17 @@ export async function GET(req, { params }) {
             );
         }
 
-        return NextResponse.json({ blog, success: true }, { status: 200 });
+        return NextResponse.json(
+            { blog, success: true }, 
+            { 
+                status: 200,
+                headers: {
+                    'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+                    'Pragma': 'no-cache',
+                    'Expires': '0',
+                }
+            }
+        );
     } catch (error) {
         console.error("Error fetching blog by slug:", error);
         return NextResponse.json(
@@ -34,6 +48,7 @@ export async function GET(req, { params }) {
         );
     }
 }
+
 
 
 

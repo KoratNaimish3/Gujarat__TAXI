@@ -1,4 +1,8 @@
 "use client";
+// Add at the top
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 
 import { useEffect, useState } from "react";
 
@@ -6,21 +10,35 @@ export default function AllBookings() {
   const [bookings, setBookings] = useState([]);
 
   const fetchBookings = async () => {
-    const res = await fetch("/api/Bookings");
-    const data = await res.json();
-    if (data.success) setBookings(data.bookings);
+    try {
+      const res = await fetch("/api/Bookings", {
+        cache: "no-store",
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate',
+        }
+      });
+      const data = await res.json();
+      if (data.success && data.bookings) {
+        setBookings(data.bookings);
+      } else {
+        setBookings([]);
+      }
+    } catch (error) {
+      console.error("Error fetching bookings:", error);
+      setBookings([]);
+    }
   };
 
   useEffect(() => {
     fetchBookings();
   }, []);
 
-  // Helper function to format date and time
+  
   const formatDateTime = (dateString) => {
     if (!dateString) return "N/A";
     try {
       const date = new Date(dateString);
-      if (isNaN(date.getTime())) return dateString; // Return original if invalid date
+      if (isNaN(date.getTime())) return dateString; 
       
       const formattedDate = date.toLocaleDateString("en-IN", {
         year: "numeric",

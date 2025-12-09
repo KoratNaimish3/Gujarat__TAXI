@@ -12,13 +12,23 @@ export default function AllBlogsPage() {
 
     const fetchBlogs = async () => {
         try {
-            const res = await fetch("/api/blogs");
+            const res = await fetch("/api/blogs", {
+                cache: "no-store",
+                headers: {
+                    'Cache-Control': 'no-store, no-cache, must-revalidate',
+                }
+            });
             const data = await res.json();
 
-            setBlogs(data.blogs);
+            if (data.success !== false && data.blogs) {
+                setBlogs(data.blogs);
+            } else {
+                setBlogs([]);
+            }
         } catch (error) {
             console.error("Error fetching blogs:", error);
             toast.error("Something went wrong");
+            setBlogs([]);
         } finally {
             setLoading(false);
         }

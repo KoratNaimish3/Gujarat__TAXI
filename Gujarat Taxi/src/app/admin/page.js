@@ -7,25 +7,41 @@ export default function BlogList() {
     const [totalBookings, setTotalBookings] = useState(0)
 
     const fetchBlogs = async () => {
-        const res = await fetch("/api/blogs", {
-            method: "GET",
-            cache: "no-store"
-        });
+        try {
+            const res = await fetch("/api/blogs", {
+                method: "GET",
+                cache: "no-store",
+                headers: {
+                    'Cache-Control': 'no-store, no-cache, must-revalidate',
+                }
+            });
 
-        const data = await res.json();
-
-        setTotalBlogs(data.totalBlogs);
+            const data = await res.json();
+            if (data.success !== false) {
+                setTotalBlogs(data.totalBlogs || 0);
+            }
+        } catch (error) {
+            console.error("Error fetching blogs:", error);
+        }
     };
 
     const fetchBokkings = async () => {
-        const res = await fetch("/api/Bookings", {
-            method: "GET",
-            cache: "no-store"
-        });
+        try {
+            const res = await fetch("/api/Bookings", {
+                method: "GET",
+                cache: "no-store",
+                headers: {
+                    'Cache-Control': 'no-store, no-cache, must-revalidate',
+                }
+            });
 
-        const data = await res.json();
-
-        setTotalBookings(data.totalBookings);
+            const data = await res.json();
+            if (data.success) {
+                setTotalBookings(data.totalBookings || 0);
+            }
+        } catch (error) {
+            console.error("Error fetching bookings:", error);
+        }
     };
 
     useEffect(() => {

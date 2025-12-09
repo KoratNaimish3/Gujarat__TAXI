@@ -10,7 +10,10 @@ const connectDB = async () => {
 
   try {
     const mongoUrl = process.env.MONGO_URL;
-    if (!mongoUrl) throw new Error("❌ MONGO_URL not found");
+    if (!mongoUrl) {
+      console.error("❌ MONGO_URL not found in environment variables");
+      throw new Error("❌ MONGO_URL not found");
+    }
 
     // Reuse existing connection if mongoose already connected
     if (mongoose.connection.readyState === 1) {
@@ -26,7 +29,13 @@ const connectDB = async () => {
     console.log("✅ MongoDB Connected Successfully");
   } catch (error) {
     console.error("❌ MongoDB Connection Error:", error.message);
-    process.exit(1);
+    console.error("Full error:", error);
+    // Don't exit in production, just log the error and throw
+    // This allows API routes to handle the error gracefully
+    if (process.env.NODE_ENV === 'development') {
+      process.exit(1);
+    }
+    throw error; // Re-throw so API routes can handle it
   }
 };
 

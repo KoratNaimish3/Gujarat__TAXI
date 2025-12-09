@@ -3,6 +3,10 @@ import connectDB from "../../../lib/db"
 import BLOG from "../../../models/blog"
 import cloudinary from "@/app/lib/cloudinary";
 
+// Force dynamic rendering - disable caching
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 // GET /api/blogs/[id] → Get blog by ID
 export async function GET(req, { params }) {
     try {
@@ -15,7 +19,17 @@ export async function GET(req, { params }) {
             return NextResponse.json({ success: false, message: "Blog not found" }, { status: 404 });
         }
 
-        return NextResponse.json({ blog, success: true }, { status: 200 });
+        return NextResponse.json(
+            { blog, success: true }, 
+            { 
+                status: 200,
+                headers: {
+                    'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+                    'Pragma': 'no-cache',
+                    'Expires': '0',
+                }
+            }
+        );
     } catch (error) {
         console.error("Get blog error:", error);
         return NextResponse.json({ message: "Internal Server Error", success: false }, { status: 500 });

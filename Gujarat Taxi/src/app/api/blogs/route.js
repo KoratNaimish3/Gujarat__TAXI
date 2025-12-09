@@ -3,6 +3,10 @@ import connectDB from "../../lib/db";
 import BLOG from "../../models/blog";
 import cloudinary from "../../lib/cloudinary";
 
+// Force dynamic rendering - disable caching
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 // POST /api/blogs → Create new blog
 export async function POST(req) {
     try {
@@ -95,10 +99,29 @@ export async function GET() {
         const blogs = await BLOG.find().sort({ createdAt: -1 });
         const totalBlogs = await BLOG.countDocuments(); 
 
-        return NextResponse.json({ blogs , totalBlogs }, { status: 200 });
-    } catch (error) {
         return NextResponse.json(
-            { message: "Failed to fetch blogs", error: error.message, success: false },
+            { 
+                blogs, 
+                totalBlogs,
+                success: true 
+            }, 
+            { 
+                status: 200,
+                headers: {
+                    'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+                    'Pragma': 'no-cache',
+                    'Expires': '0',
+                }
+            }
+        );
+    } catch (error) {
+        console.error("Error fetching blogs:", error);
+        return NextResponse.json(
+            { 
+                message: "Failed to fetch blogs", 
+                error: error.message, 
+                success: false 
+            },
             { status: 500 }
         );
     }

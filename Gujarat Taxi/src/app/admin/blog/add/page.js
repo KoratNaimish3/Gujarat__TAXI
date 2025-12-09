@@ -167,7 +167,6 @@ export default function AddBlogPage() {
           </div>
         </div>
 
-        {/* SEO Fields */}
         <div className="border-t pt-4 mt-4">
           <h2 className="text-xl font-bold mb-2 text-gray-700 dark:text-black">SEO Metadata</h2>
 
