@@ -101,11 +101,16 @@ export async function POST(req) {
             usageCount: 0,
         });
 
+        console.log("Media saved to database:", media._id, media.filePath); // Debug log
+
+        // Convert Mongoose document to plain object for proper serialization
+        const mediaObject = media.toObject ? media.toObject() : media;
+
         return NextResponse.json(
             {
                 success: true,
                 message: "Media uploaded successfully",
-                media,
+                media: mediaObject,
             },
             { status: 201 }
         );
@@ -121,4 +126,7 @@ export async function POST(req) {
         );
     }
 }
+
+
+
 

@@ -84,11 +84,28 @@ export default function EditBlogPage() {
   useEffect(() => {
     const fetchBlog = async () => {
       try {
-        const res = await fetch(`/api/blogs/${id}`);
+        console.log("Fetching blog with ID:", id);
+        const res = await fetch(`/api/blogs/${id}`, {
+          cache: "no-store",
+          headers: {
+            'Cache-Control': 'no-store, no-cache, must-revalidate',
+          }
+        });
+        
+        console.log("Response status:", res.status);
         const result = await res.json();
+        console.log("Response data:", result);
 
-        if (result.success && result.blog) {
+        if (!res.ok || !result.success) {
+          console.error("API error:", result.message || "Unknown error");
+          toast.error(result.message || "Blog not found");
+          router.push("/admin/blog/manage");
+          return;
+        }
+
+        if (result.blog) {
           const blog = result.blog;
+          console.log("Blog data loaded:", blog.title);
           setData({
             title: blog.title || "",
             slug: blog.slug || "",
@@ -133,6 +150,7 @@ export default function EditBlogPage() {
       fetchBlog();
     }
   }, [id, router]);
+
 
   // Auto-save revisions every 30 seconds
   useEffect(() => {
@@ -203,6 +221,9 @@ export default function EditBlogPage() {
       formData.append("faqs", JSON.stringify(data.faqs));
       formData.append("categories", JSON.stringify(data.categories));
       formData.append("tags", JSON.stringify(data.tags));
+      formData.append("routes", JSON.stringify([]));
+      formData.append("cities", JSON.stringify([]));
+      formData.append("airports", JSON.stringify([]));
       formData.append("status", data.status);
       if (data.scheduledAt) formData.append("scheduledAt", data.scheduledAt);
       if (data.canonicalUrl) formData.append("canonicalUrl", data.canonicalUrl);
@@ -365,6 +386,7 @@ export default function EditBlogPage() {
             <p className="text-gray-500 text-sm italic">No FAQs added yet. Click "Add FAQ" to add one.</p>
           )}
         </div>
+
 
         {/* SEO Fields */}
         <div className="border-t pt-4 mt-4">

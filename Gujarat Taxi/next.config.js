@@ -4,6 +4,16 @@ const nextConfig = {
   experimental: {
     // Ensure API routes are not cached
   },
+  // Configure images to allow Cloudinary hostname
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+        pathname: '/**',
+      },
+    ],
+  },
   // Force dynamic rendering for admin routes
   async headers() {
     return [

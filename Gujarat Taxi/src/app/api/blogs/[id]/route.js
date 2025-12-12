@@ -13,17 +13,63 @@ export async function GET(req, { params }) {
         await connectDB();
 
         const { id } = await params;
+        
+        console.log("Fetching blog with ID:", id);
+
+        if (!id) {
+            return NextResponse.json({ success: false, message: "Blog ID is required" }, { status: 400 });
+        }
 
         const blog = await BLOG.findById(id)
             .populate('categories', 'name slug')
             .populate('tags', 'name slug')
-            .populate('authorId', 'userName email');
+            .populate('authorId', 'userName email')
+            .lean();
+
         if (!blog) {
+            console.log("Blog not found for ID:", id);
             return NextResponse.json({ success: false, message: "Blog not found" }, { status: 404 });
         }
 
+        console.log("Blog found:", blog.title);
+
+        // Helper function to safely convert to string
+        const safeToString = (value) => {
+            if (!value) return null;
+            if (typeof value === 'string') return value;
+            if (value.toString) return value.toString();
+            return String(value);
+        };
+
+        // Convert to plain object and ensure proper serialization
+        const blogData = {
+            ...blog,
+            _id: blog._id ? blog._id.toString() : id,
+            categories: Array.isArray(blog.categories) && blog.categories.length > 0
+                ? blog.categories
+                    .filter(cat => cat && cat._id)
+                    .map(cat => ({
+                        _id: cat._id.toString(),
+                        name: cat.name || '',
+                        slug: cat.slug || ''
+                    }))
+                : [],
+            tags: Array.isArray(blog.tags) && blog.tags.length > 0
+                ? blog.tags
+                    .filter(tag => tag && tag._id)
+                    .map(tag => ({
+                        _id: tag._id.toString(),
+                        name: tag.name || '',
+                        slug: tag.slug || ''
+                    }))
+                : [],
+            createdAt: blog.createdAt ? new Date(blog.createdAt).toISOString() : null,
+            updatedAt: blog.updatedAt ? new Date(blog.updatedAt).toISOString() : null,
+            scheduledAt: blog.scheduledAt ? new Date(blog.scheduledAt).toISOString() : null,
+        };
+
         return NextResponse.json(
-            { blog, success: true }, 
+            { blog: blogData, success: true }, 
             { 
                 status: 200,
                 headers: {
@@ -35,7 +81,12 @@ export async function GET(req, { params }) {
         );
     } catch (error) {
         console.error("Get blog error:", error);
-        return NextResponse.json({ message: "Internal Server Error", success: false }, { status: 500 });
+        console.error("Error stack:", error.stack);
+        return NextResponse.json({ 
+            message: "Internal Server Error", 
+            error: error.message, 
+            success: false 
+        }, { status: 500 });
     }
 }
 

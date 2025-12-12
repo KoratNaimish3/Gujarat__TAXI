@@ -13,6 +13,8 @@ export async function GET(req, { params }) {
 
         const { slug } = await params;
 
+        console.log("Fetching blog with slug:", slug);
+
         if (!slug) {
             return NextResponse.json(
                 { message: "Slug is required", success: false },
@@ -20,10 +22,30 @@ export async function GET(req, { params }) {
             );
         }
 
-        const blog = await BLOG.findOne({ slug, status: "published" })
-            .populate('categories', 'name slug')
-            .populate('tags', 'name slug')
-            .populate('authorId', 'userName email');
+        let blog;
+        try {
+            blog = await BLOG.findOne({ slug, status: "published" })
+                .populate('categories', 'name slug')
+                .populate('tags', 'name slug')
+                .populate({
+                    path: 'authorId',
+                    select: 'userName email',
+                    options: { strictPopulate: false }
+                })
+                .lean();
+            
+            console.log("Blog found:", blog ? blog.title : "Not found");
+        } catch (populateError) {
+            console.error("Error populating blog:", populateError);
+            console.error("Error stack:", populateError.stack);
+            // Try without populate if it fails
+            try {
+                blog = await BLOG.findOne({ slug, status: "published" }).lean();
+            } catch (findError) {
+                console.error("Error finding blog:", findError);
+                throw findError;
+            }
+        }
 
         if (!blog) {
             return NextResponse.json(
@@ -32,8 +54,58 @@ export async function GET(req, { params }) {
             );
         }
 
+        // Helper function to safely convert to string
+        const safeToString = (value) => {
+            if (!value) return null;
+            if (typeof value === 'string') return value;
+            if (value && value.toString) return value.toString();
+            return String(value);
+        };
+
+        // Convert to plain object and ensure proper serialization
+        const blogData = {
+            ...blog,
+            _id: blog._id ? blog._id.toString() : null,
+            categories: Array.isArray(blog.categories) && blog.categories.length > 0
+                ? blog.categories
+                    .filter(cat => cat && cat._id)
+                    .map(cat => ({
+                        _id: cat._id ? cat._id.toString() : null,
+                        name: cat.name || '',
+                        slug: cat.slug || ''
+                    }))
+                : [],
+            tags: Array.isArray(blog.tags) && blog.tags.length > 0
+                ? blog.tags
+                    .filter(tag => tag && tag._id)
+                    .map(tag => ({
+                        _id: tag._id ? tag._id.toString() : null,
+                        name: tag.name || '',
+                        slug: tag.slug || ''
+                    }))
+                : [],
+            createdAt: blog.createdAt ? (blog.createdAt instanceof Date ? blog.createdAt.toISOString() : new Date(blog.createdAt).toISOString()) : null,
+            updatedAt: blog.updatedAt ? (blog.updatedAt instanceof Date ? blog.updatedAt.toISOString() : new Date(blog.updatedAt).toISOString()) : null,
+            scheduledAt: blog.scheduledAt ? (blog.scheduledAt instanceof Date ? blog.scheduledAt.toISOString() : new Date(blog.scheduledAt).toISOString()) : null,
+        };
+
+        // Handle authorId separately
+        if (blog.authorId) {
+            if (typeof blog.authorId === 'object' && blog.authorId._id) {
+                blogData.authorId = {
+                    _id: blog.authorId._id.toString(),
+                    userName: blog.authorId.userName || '',
+                    email: blog.authorId.email || ''
+                };
+            } else {
+                blogData.authorId = blog.authorId.toString();
+            }
+        } else {
+            blogData.authorId = null;
+        }
+
         return NextResponse.json(
-            { blog, success: true }, 
+            { blog: blogData, success: true }, 
             { 
                 status: 200,
                 headers: {

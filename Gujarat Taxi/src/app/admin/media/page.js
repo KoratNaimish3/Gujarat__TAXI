@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { toast } from "react-toastify";
 import { Upload, Search, Edit2, Trash2, X, Save, Image as ImageIcon } from "lucide-react";
 
@@ -18,31 +18,52 @@ export default function MediaPage() {
     const [editingId, setEditingId] = useState(null);
     const [editAltText, setEditAltText] = useState("");
     const [editCaption, setEditCaption] = useState("");
+    const [refreshKey, setRefreshKey] = useState(0);
 
-    useEffect(() => {
-        fetchMedia();
-    }, [page, searchTerm]);
-
-    const fetchMedia = async () => {
+    const fetchMedia = useCallback(async (currentPage = page, currentSearch = searchTerm) => {
         try {
             setLoading(true);
             const res = await fetch(
-                `/api/media?page=${page}&limit=20&search=${encodeURIComponent(searchTerm)}`,
-                { cache: "no-store" }
+                `/api/media?page=${currentPage}&limit=20&search=${encodeURIComponent(currentSearch)}`,
+                { 
+                    cache: "no-store",
+                    headers: {
+                        'Cache-Control': 'no-store, no-cache, must-revalidate',
+                    }
+                }
             );
             const data = await res.json();
+            console.log("Media API Response:", data); // Debug log
 
             if (data.success) {
+                console.log("Media items received:", data.media?.length || 0); // Debug log
+                // Log first item to debug image URLs
+                if (data.media && data.media.length > 0) {
+                    console.log("First media item:", {
+                        _id: data.media[0]._id,
+                        filePath: data.media[0].filePath,
+                        sizes: data.media[0].sizes,
+                        thumbnail: data.media[0].sizes?.thumbnail,
+                    });
+                }
                 setMedia(data.media || []);
                 setTotalPages(data.pagination?.pages || 1);
+            } else {
+                console.error("Failed to fetch media:", data.message);
+                setMedia([]);
             }
         } catch (error) {
             console.error("Error fetching media:", error);
             toast.error("Failed to load media");
+            setMedia([]);
         } finally {
             setLoading(false);
         }
-    };
+    }, [page, searchTerm]);
+
+    useEffect(() => {
+        fetchMedia();
+    }, [fetchMedia, refreshKey]);
 
     const handleUpload = async (e) => {
         e.preventDefault();
@@ -64,14 +85,24 @@ export default function MediaPage() {
             });
 
             const result = await res.json();
+            console.log("Upload API Response:", result); // Debug log
 
             if (result.success) {
                 toast.success("Media uploaded successfully");
+                console.log("Uploaded media:", result.media); // Debug log
                 setShowUpload(false);
                 setUploadFile(null);
                 setUploadAltText("");
                 setUploadCaption("");
-                fetchMedia();
+                // Reset to first page and clear search
+                setPage(1);
+                setSearchTerm("");
+                // Force refresh by updating refreshKey and fetch with explicit values
+                setRefreshKey(prev => prev + 1);
+                // Small delay to ensure database write is complete, then fetch with page 1 and empty search
+                setTimeout(() => {
+                    fetchMedia(1, "");
+                }, 200);
             } else {
                 toast.error(result.message || "Failed to upload media");
             }
@@ -112,6 +143,11 @@ export default function MediaPage() {
     };
 
     const handleSaveEdit = async () => {
+        if (!editingId) {
+            toast.error("No media selected for editing");
+            return;
+        }
+
         try {
             const res = await fetch(`/api/media/${editingId}`, {
                 method: "PUT",
@@ -125,11 +161,18 @@ export default function MediaPage() {
             });
 
             const result = await res.json();
+            console.log("Edit API Response:", result); // Debug log
 
             if (result.success) {
                 toast.success("Media updated successfully");
                 setEditingId(null);
-                fetchMedia();
+                setEditAltText("");
+                setEditCaption("");
+                // Force refresh
+                setRefreshKey(prev => prev + 1);
+                setTimeout(() => {
+                    fetchMedia();
+                }, 100);
             } else {
                 toast.error(result.message || "Failed to update media");
             }
@@ -261,12 +304,44 @@ export default function MediaPage() {
                                 key={item._id}
                                 className="bg-white border rounded-lg overflow-hidden shadow hover:shadow-lg transition-shadow"
                             >
-                                <div className="relative aspect-square bg-gray-100">
-                                    <img
-                                        src={item.sizes?.thumbnail || item.filePath}
-                                        alt={item.altText || "Media"}
-                                        className="w-full h-full object-cover"
-                                    />
+                                <div className="relative aspect-square bg-gray-100 overflow-hidden">
+                                    {(() => {
+                                        const imageUrl = item.sizes?.thumbnail || item.filePath || '';
+                                        console.log(`Rendering image for ${item._id}:`, { imageUrl, hasSizes: !!item.sizes, filePath: item.filePath });
+                                        return (
+                                            <>
+                                                <img
+                                                    src={imageUrl}
+                                                    alt={item.altText || "Media"}
+                                                    className="w-full h-full object-cover"
+                                                    loading="lazy"
+                                                    onError={(e) => {
+                                                        console.error(`Image load error for ${item._id}:`, e.target.src);
+                                                        // Fallback to filePath if thumbnail fails
+                                                        if (e.target.src !== item.filePath && item.filePath) {
+                                                            console.log(`Trying fallback to filePath:`, item.filePath);
+                                                            e.target.src = item.filePath;
+                                                        } else {
+                                                            // If both fail, show placeholder
+                                                            console.log(`Both image URLs failed, showing placeholder`);
+                                                            e.target.style.display = 'none';
+                                                            const placeholder = document.getElementById(`placeholder-${item._id}`);
+                                                            if (placeholder) {
+                                                                placeholder.classList.remove('hidden');
+                                                                placeholder.classList.add('flex');
+                                                            }
+                                                        }
+                                                    }}
+                                                    onLoad={() => {
+                                                        console.log(`Image loaded successfully for ${item._id}`);
+                                                    }}
+                                                />
+                                                <div className="absolute inset-0 hidden items-center justify-center bg-gray-200" id={`placeholder-${item._id}`}>
+                                                    <ImageIcon className="text-gray-400" size={48} />
+                                                </div>
+                                            </>
+                                        );
+                                    })()}
                                     {editingId === item._id ? (
                                         <div className="absolute inset-0 bg-black bg-opacity-75 p-2 flex flex-col">
                                             <input
@@ -356,4 +431,7 @@ export default function MediaPage() {
         </div>
     );
 }
+
+
+
 

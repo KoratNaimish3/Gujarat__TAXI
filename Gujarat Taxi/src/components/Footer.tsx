@@ -405,59 +405,49 @@ export default function Footer() {
 
             {/* Popular Routes */}
             <div>
-              <h4 className="text-lg font-semibold mb-6 text-orange-400">
-                Popular Routes
-              </h4>
-              <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2 footer-scrollbar">
-                {footerLinks.popularRoutes.map((route) => {
-                  const routeName = route.name; // e.g., "Ahmedabad to Rajkot"
-                  return (
-                    <div key={route.name} className="space-y-1">
-                      <p className="font-medium text-orange-400 text-sm mb-1">{routeName}</p>
-                      <p className="text-gray-300 hover:text-orange-400 transition-colors duration-300 text-xs leading-relaxed">
-                        <a href="#" className="hover:text-orange-400">One way taxi {routeName}</a> | <a href="#" className="hover:text-orange-400">Round trip {routeName}</a> | <a href="#" className="hover:text-orange-400">{routeName} taxi service</a> | <a href="#" className="hover:text-orange-400">{routeName} Cab service</a>
-                      </p>
-                    </div>
-                  );
-                })}
+              <div className="flex flex-col gap-5">
+                <h4 className="text-lg font-semibold text-orange-400">
+                  Popular Routes
+                </h4>
+                <div className="space-y-2">
+                  <p className="text-gray-300 text-sm">Ahmedabad to Rajkot</p>
+                  <p className="text-gray-300 text-sm">Ahmedabad to Vadodara</p>
+                  <p className="text-gray-300 text-sm">Ahmedabad to Surat</p>
+                  <p className="text-gray-300 text-sm">Surat to Mumbai</p>
+                  <p className="text-gray-300 text-sm">Vadodara to Udaipur</p>
+                </div>
               </div>
             </div>
 
             {/* Popular Cities */}
             <div>
-              <h4 className="text-lg font-semibold mb-6 text-orange-400">
-                Popular Cities
-              </h4>
-              <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2 footer-scrollbar">
-                {footerLinks.popularCities.map((city) => {
-                  return (
-                    <div key={city} className="space-y-1">
-                      <p className="font-medium text-orange-400 text-sm mb-1">{city}</p>
-                      <p className="text-gray-300 hover:text-orange-400 transition-colors duration-300 text-xs leading-relaxed">
-                        <a href="#" className="hover:text-orange-400">Cab in {city}</a> | <a href="#" className="hover:text-orange-400">Taxi in {city}</a> | <a href="#" className="hover:text-orange-400">Cab service in {city}</a> | <a href="#" className="hover:text-orange-400">Taxi service in {city}</a>
-                      </p>
-                    </div>
-                  );
-                })}
+              <div className="flex flex-col gap-5">
+                <h4 className="text-lg font-semibold text-orange-400">
+                  Popular Cities
+                </h4>
+                <div className="space-y-2">
+                  <p className="text-gray-300 text-sm">Ahmedabad</p>
+                  <p className="text-gray-300 text-sm">Surat</p>
+                  <p className="text-gray-300 text-sm">Vadodara</p>
+                  <p className="text-gray-300 text-sm">Rajkot</p>
+                  <p className="text-gray-300 text-sm">Bhavnagar</p>
+                </div>
               </div>
             </div>
 
             {/* Airport Pick Up & Drop */}
             <div>
-              <h4 className="text-lg font-semibold mb-6 text-orange-400">
-                Airport Pick Up & Drop
-              </h4>
-              <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2 footer-scrollbar">
-                {footerLinks.airports.map((city) => {
-                  return (
-                    <div key={city} className="space-y-1">
-                      <p className="font-medium text-orange-400 text-sm mb-1">{city}</p>
-                      <p className="text-gray-300 hover:text-orange-400 transition-colors duration-300 text-xs leading-relaxed">
-                        <a href="#" className="hover:text-orange-400">airport taxi {city}</a> | <a href="#" className="hover:text-orange-400">airport cab {city}</a> | <a href="#" className="hover:text-orange-400">{city} airport cab service</a> | <a href="#" className="hover:text-orange-400">{city} airport taxi service</a>
-                      </p>
-                    </div>
-                  );
-                })}
+              <div className="flex flex-col gap-5">
+                <h4 className="text-lg font-semibold text-orange-400">
+                  Airport Pick Up & Drop
+                </h4>
+                <div className="space-y-2">
+                  <p className="text-gray-300 text-sm">Ahmedabad Airport</p>
+                  <p className="text-gray-300 text-sm">Surat Airport</p>
+                  <p className="text-gray-300 text-sm">Vadodara Airport</p>
+                  <p className="text-gray-300 text-sm">Rajkot Airport</p>
+                  <p className="text-gray-300 text-sm">Bhuj Airport</p>
+                </div>
               </div>
             </div>
           </div>
@@ -486,152 +476,6 @@ export default function Footer() {
           </div>
         </div> */}
 
-        {/* Our Presence Section */}
-        <div className="border-t border-gray-800 py-8">
-          <div className="max-w-7xl mx-auto">
-            <h4 className="text-xl font-semibold mb-6 text-orange-400 text-center">
-              Our Presence - One Way Cab Service & Outstation Taxi Services Across Gujarat
-            </h4>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 text-sm">
-              <div className="text-gray-300">
-                <p className="font-medium text-orange-400 mb-1">Ahmedabad</p>
-                <p className="text-gray-400 text-xs">One Way Cab Service | Outstation</p>
-              </div>
-              <div className="text-gray-300">
-                <p className="font-medium text-orange-400 mb-1">Surat</p>
-                <p className="text-gray-400 text-xs">One Way Taxi Service | Cab Service</p>
-              </div>
-              <div className="text-gray-300">
-                <p className="font-medium text-orange-400 mb-1">Vadodara</p>
-                <p className="text-gray-400 text-xs">One Way Taxi | Outstation Cab</p>
-              </div>
-              <div className="text-gray-300">
-                <p className="font-medium text-orange-400 mb-1">Rajkot</p>
-                <p className="text-gray-400 text-xs">One Way Cab | Taxi Service</p>
-              </div>
-              <div className="text-gray-300">
-                <p className="font-medium text-orange-400 mb-1">Bhavnagar</p>
-                <p className="text-gray-400 text-xs">One Way Taxi Service | Outstation</p>
-              </div>
-              <div className="text-gray-300">
-                <p className="font-medium text-orange-400 mb-1">Jamnagar</p>
-                <p className="text-gray-400 text-xs">One Way Cab Service | Taxi Service</p>
-              </div>
-              <div className="text-gray-300">
-                <p className="font-medium text-orange-400 mb-1">Gandhinagar</p>
-                <p className="text-gray-400 text-xs">One Way Taxi | Cab Service</p>
-              </div>
-              <div className="text-gray-300">
-                <p className="font-medium text-orange-400 mb-1">Junagadh</p>
-                <p className="text-gray-400 text-xs">One Way Cab | Outstation Taxi</p>
-              </div>
-              <div className="text-gray-300">
-                <p className="font-medium text-orange-400 mb-1">Dwarka</p>
-                <p className="text-gray-400 text-xs">One Way Taxi Service | Outstation</p>
-              </div>
-              <div className="text-gray-300">
-                <p className="font-medium text-orange-400 mb-1">Somnath</p>
-                <p className="text-gray-400 text-xs">One Way Cab | Taxi Service</p>
-              </div>
-              <div className="text-gray-300">
-                <p className="font-medium text-orange-400 mb-1">Porbandar</p>
-                <p className="text-gray-400 text-xs">One Way Taxi | Cab Service</p>
-              </div>
-              <div className="text-gray-300">
-                <p className="font-medium text-orange-400 mb-1">Bhuj</p>
-                <p className="text-gray-400 text-xs">One Way Cab Service | Outstation</p>
-              </div>
-              <div className="text-gray-300">
-                <p className="font-medium text-orange-400 mb-1">Mehsana</p>
-                <p className="text-gray-400 text-xs">One Way Taxi Service | Cab Service</p>
-              </div>
-              <div className="text-gray-300">
-                <p className="font-medium text-orange-400 mb-1">Palanpur</p>
-                <p className="text-gray-400 text-xs">One Way Cab | Outstation Taxi</p>
-              </div>
-              <div className="text-gray-300">
-                <p className="font-medium text-orange-400 mb-1">Patan</p>
-                <p className="text-gray-400 text-xs">One Way Taxi | Taxi Service</p>
-              </div>
-              <div className="text-gray-300">
-                <p className="font-medium text-orange-400 mb-1">Anjar</p>
-                <p className="text-gray-400 text-xs">One Way Cab Service | Outstation</p>
-              </div>
-              <div className="text-gray-300">
-                <p className="font-medium text-orange-400 mb-1">Kutch</p>
-                <p className="text-gray-400 text-xs">One Way Taxi Service | Cab Service</p>
-              </div>
-              <div className="text-gray-300">
-                <p className="font-medium text-orange-400 mb-1">Diu</p>
-                <p className="text-gray-400 text-xs">One Way Cab | Outstation Taxi</p>
-              </div>
-              <div className="text-gray-300">
-                <p className="font-medium text-orange-400 mb-1">Anand</p>
-                <p className="text-gray-400 text-xs">One Way Taxi | Cab Service</p>
-              </div>
-              <div className="text-gray-300">
-                <p className="font-medium text-orange-400 mb-1">Nadiad</p>
-                <p className="text-gray-400 text-xs">One Way Cab Service | Taxi Service</p>
-              </div>
-              <div className="text-gray-300">
-                <p className="font-medium text-orange-400 mb-1">Bharuch</p>
-                <p className="text-gray-400 text-xs">One Way Taxi | Outstation</p>
-              </div>
-              <div className="text-gray-300">
-                <p className="font-medium text-orange-400 mb-1">Navsari</p>
-                <p className="text-gray-400 text-xs">One Way Cab | Taxi Service</p>
-              </div>
-              <div className="text-gray-300">
-                <p className="font-medium text-orange-400 mb-1">Valsad</p>
-                <p className="text-gray-400 text-xs">One Way Taxi Service | Outstation Cab</p>
-              </div>
-              <div className="text-gray-300">
-                <p className="font-medium text-orange-400 mb-1">Morbi</p>
-                <p className="text-gray-400 text-xs">One Way Cab | Outstation Taxi</p>
-              </div>
-              <div className="text-gray-300">
-                <p className="font-medium text-orange-400 mb-1">Surendranagar</p>
-                <p className="text-gray-400 text-xs">One Way Taxi | Cab Service</p>
-              </div>
-              <div className="text-gray-300">
-                <p className="font-medium text-orange-400 mb-1">Botad</p>
-                <p className="text-gray-400 text-xs">One Way Cab Service | Outstation</p>
-              </div>
-              <div className="text-gray-300">
-                <p className="font-medium text-orange-400 mb-1">Amreli</p>
-                <p className="text-gray-400 text-xs">One Way Taxi Service | Taxi Service</p>
-              </div>
-              <div className="text-gray-300">
-                <p className="font-medium text-orange-400 mb-1">Veraval</p>
-                <p className="text-gray-400 text-xs">One Way Cab | Outstation Taxi</p>
-              </div>
-              <div className="text-gray-300">
-                <p className="font-medium text-orange-400 mb-1">Gondal</p>
-                <p className="text-gray-400 text-xs">One Way Taxi | Cab Service</p>
-              </div>
-              <div className="text-gray-300">
-                <p className="font-medium text-orange-400 mb-1">Jetpur</p>
-                <p className="text-gray-400 text-xs">One Way Cab Service | Outstation</p>
-              </div>
-              <div className="text-gray-300">
-                <p className="font-medium text-orange-400 mb-1">Dahod</p>
-                <p className="text-gray-400 text-xs">One Way Taxi | Taxi Service</p>
-              </div>
-              <div className="text-gray-300">
-                <p className="font-medium text-orange-400 mb-1">Godhra</p>
-                <p className="text-gray-400 text-xs">One Way Cab | Outstation Cab</p>
-              </div>
-              <div className="text-gray-300">
-                <p className="font-medium text-orange-400 mb-1">Himmatnagar</p>
-                <p className="text-gray-400 text-xs">One Way Taxi Service | Outstation</p>
-              </div>
-            </div>
-            <p className="text-gray-400 text-sm text-center mt-6">
-              Book reliable one way cab service, one way taxi service, and outstation taxi and cab services for intercity travel across all major cities in Gujarat. 
-              Professional drivers, affordable rates, and 24/7 customer support for your one way taxi and one way cab booking needs.
-            </p>
-          </div>
-        </div>
 
         {/* Bottom Footer */}
         <div className="border-t border-gray-800 py-8">

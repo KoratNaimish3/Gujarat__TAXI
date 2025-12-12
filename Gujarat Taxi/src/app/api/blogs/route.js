@@ -142,11 +142,28 @@ export async function POST(req) {
     }
 }
 
-export async function GET() {
+export async function GET(req) {
     try {
         await connectDB();
 
-        const blogs = await BLOG.find().sort({ createdAt: -1 });
+        const { searchParams } = new URL(req.url);
+        const status = searchParams.get('status');
+
+        const query = {};
+        
+        if (status) {
+            query.status = status;
+        }
+
+        const blogs = await BLOG.find(query).sort({ createdAt: -1 }).lean();
+        
+        // Convert to plain objects
+        const blogsData = blogs.map(blog => ({
+            ...blog,
+            _id: blog._id.toString(),
+        }));
+
+        // Get counts for admin dashboard
         const totalBlogs = await BLOG.countDocuments();
         const publishedCount = await BLOG.countDocuments({ status: "published" });
         const scheduledCount = await BLOG.countDocuments({ status: "scheduled" });
@@ -154,7 +171,7 @@ export async function GET() {
 
         return NextResponse.json(
             { 
-                blogs, 
+                blogs: blogsData, 
                 totalBlogs,
                 publishedCount,
                 scheduledCount,

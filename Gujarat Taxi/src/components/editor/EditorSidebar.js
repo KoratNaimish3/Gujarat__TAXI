@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Calendar, Image as ImageIcon, Eye, Save } from "lucide-react";
+import { Calendar, Image as ImageIcon, Eye, Save, MapPin, Building2, Plane, Plus, Edit2, X } from "lucide-react";
 import SEOPreview from "./SEOPreview";
 import CategorySelector from "./CategorySelector";
 import TagSelector from "./TagSelector";
@@ -16,6 +16,24 @@ export default function EditorSidebar({
     onSubmit,
     loading,
     isEdit = false,
+    availableRoutes = [],
+    availableCities = [],
+    availableAirports = [],
+    selectedRoutes = [],
+    selectedCities = [],
+    selectedAirports = [],
+    onRouteChange = () => {},
+    onCityChange = () => {},
+    onAirportChange = () => {},
+    showCreateRoute = false,
+    setShowCreateRoute = () => {},
+    newRoute = {},
+    setNewRoute = () => {},
+    fetchRoutes = () => {},
+    editingRouteId = null,
+    setEditingRouteId = () => {},
+    editingRoute = null,
+    setEditingRoute = () => {},
 }) {
     const [activeTab, setActiveTab] = useState("publish");
 
@@ -178,4 +196,7 @@ export default function EditorSidebar({
         </div>
     );
 }
+
+
+
 

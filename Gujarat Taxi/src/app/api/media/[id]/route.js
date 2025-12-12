@@ -57,20 +57,54 @@ export async function PUT(req, { params }) {
             );
         }
 
-        const updatedMedia = await Media.findByIdAndUpdate(
-            id,
-            {
-                altText: altText !== undefined ? altText : media.altText,
-                caption: caption !== undefined ? caption : media.caption,
-            },
-            { new: true, runValidators: true }
-        ).populate('uploadedBy', 'userName email');
+        let updatedMedia;
+        try {
+            updatedMedia = await Media.findByIdAndUpdate(
+                id,
+                {
+                    altText: altText !== undefined ? altText : media.altText,
+                    caption: caption !== undefined ? caption : media.caption,
+                },
+                { new: true, runValidators: true }
+            ).populate('uploadedBy', 'userName email').lean();
+        } catch (populateError) {
+            // If populate fails, fetch without populate
+            updatedMedia = await Media.findByIdAndUpdate(
+                id,
+                {
+                    altText: altText !== undefined ? altText : media.altText,
+                    caption: caption !== undefined ? caption : media.caption,
+                },
+                { new: true, runValidators: true }
+            ).lean();
+        }
+
+        // Ensure sizes object is preserved
+        if (updatedMedia.sizes) {
+            updatedMedia.sizes = {
+                thumbnail: updatedMedia.sizes.thumbnail || updatedMedia.filePath,
+                medium: updatedMedia.sizes.medium || updatedMedia.filePath,
+                large: updatedMedia.sizes.large || updatedMedia.filePath,
+            };
+        } else {
+            updatedMedia.sizes = {
+                thumbnail: updatedMedia.filePath,
+                medium: updatedMedia.filePath,
+                large: updatedMedia.filePath,
+            };
+        }
+
+        // Serialize the response
+        const serializedMedia = {
+            ...updatedMedia,
+            _id: updatedMedia._id.toString(),
+        };
 
         return NextResponse.json(
             {
                 success: true,
                 message: "Media updated successfully",
-                media: updatedMedia,
+                media: serializedMedia,
             },
             { status: 200 }
         );
@@ -121,4 +155,7 @@ export async function DELETE(req, { params }) {
         );
     }
 }
+
+
+
 
