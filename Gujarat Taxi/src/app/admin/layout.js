@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LogOut, LayoutDashboard, FilePlus2, FileText, Settings, Tag, FolderTree, Map, FileCode, Repeat, Link2, Activity, Shield } from "lucide-react";
+import { LogOut, LayoutDashboard, FilePlus2, FileText, Settings, Tag, FolderTree, Map, FileCode, Repeat, Link2, Activity, Shield, Building2, Plane } from "lucide-react";
 
 export default function AdminLayout({ children }) {
   const pathname = usePathname();
@@ -17,6 +17,9 @@ export default function AdminLayout({ children }) {
     { name: "All Blogs", href: "/admin/blog/manage", icon: FileText },
     { name: "Categories", href: "/admin/categories", icon: FolderTree },
     { name: "Tags", href: "/admin/tags", icon: Tag },
+    { name: "Routes", href: "/admin/routes", icon: Map },
+    { name: "Cities", href: "/admin/cities", icon: Building2 },
+    { name: "Airports", href: "/admin/airports", icon: Plane },
     { name: "Media Library", href: "/admin/media", icon: FileText },
     { name: "All Bookings", href: "/admin/bookings", icon: FileText },
     { name: "SEO Tools", href: "#", icon: Settings, divider: true },

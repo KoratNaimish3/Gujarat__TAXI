@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import anime from "animejs";
 import {
   Phone,
@@ -17,6 +17,10 @@ import { assest } from "@/assest/assest";
 
 export default function Footer() {
   const footerRef = useRef<HTMLDivElement>(null);
+  const [routesPreview, setRoutesPreview] = useState<
+    { _id: string; name: string; url: string }[]
+  >([]);
+  const [loadingRoutes, setLoadingRoutes] = useState(false);
 
   const footerLinks = {
     quickLinks: [
@@ -305,6 +309,35 @@ export default function Footer() {
     }
   }, []);
 
+  useEffect(() => {
+    const fetchRoutes = async () => {
+      try {
+        setLoadingRoutes(true);
+        const res = await fetch("/api/routes", { cache: "no-store" });
+        const data = await res.json();
+        if (data?.success && Array.isArray(data.routes)) {
+          // show only top 6 in footer for brevity
+          setRoutesPreview(data.routes.slice(0, 6));
+        } else {
+          setRoutesPreview([]);
+        }
+      } catch (error) {
+        console.error("Footer routes fetch failed:", error);
+        setRoutesPreview([]);
+      } finally {
+        setLoadingRoutes(false);
+      }
+    };
+    fetchRoutes();
+  }, []);
+
+  const buildRouteHref = (url: string) => {
+    if (!url) return "#";
+    if (url.startsWith("http")) return url;
+    if (url.startsWith("/")) return url;
+    return `/blogs/${url}`;
+  };
+
   return (
     <footer id="contact" className="bg-gray-900 text-white">
       <div ref={footerRef} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -407,14 +440,28 @@ export default function Footer() {
             <div>
               <div className="flex flex-col gap-5">
                 <h4 className="text-lg font-semibold text-orange-400">
-                  Popular Routes
+                  Routes
                 </h4>
-                <div className="space-y-2">
+                {loadingRoutes ? (
+                  <p className="text-gray-400 text-sm">Loading routes...</p>
+                ) : routesPreview.length === 0 ? (
+                  <p className="text-gray-400 text-sm">No routes yet.</p>
+                ) : (
+                  <div className="space-y-2">
                   <p className="text-gray-300 text-sm">Ahmedabad to Rajkot</p>
-                  <p className="text-gray-300 text-sm">Ahmedabad to Vadodara</p>
-                  <p className="text-gray-300 text-sm">Ahmedabad to Surat</p>
-                  <p className="text-gray-300 text-sm">Surat to Mumbai</p>
-                  <p className="text-gray-300 text-sm">Vadodara to Udaipur</p>
+                  <p className="text-gray-300 text-sm">Surat to Vadodara</p>
+                  <p className="text-gray-300 text-sm">Vadodara to Jamnagar</p>
+                  <p className="text-gray-300 text-sm">Rajkot to Bhavnagar</p>
+                  <p className="text-gray-300 text-sm">Bhavnagar to Surat</p>
+                  </div>
+                )}
+                <div className="pt-3">
+                  <Link
+                    href="/routes"
+                    className="text-orange-400 text-sm font-semibold hover:underline"
+                  >
+                    View all routes →
+                  </Link>
                 </div>
               </div>
             </div>
@@ -423,7 +470,7 @@ export default function Footer() {
             <div>
               <div className="flex flex-col gap-5">
                 <h4 className="text-lg font-semibold text-orange-400">
-                  Popular Cities
+                  Cities
                 </h4>
                 <div className="space-y-2">
                   <p className="text-gray-300 text-sm">Ahmedabad</p>
@@ -432,6 +479,14 @@ export default function Footer() {
                   <p className="text-gray-300 text-sm">Rajkot</p>
                   <p className="text-gray-300 text-sm">Bhavnagar</p>
                 </div>
+                <div className="pt-3">
+                  <Link
+                    href="/cities"
+                    className="text-orange-400 text-sm font-semibold hover:underline"
+                  >
+                    View all cities →
+                  </Link>
+                </div>
               </div>
             </div>
 
@@ -439,14 +494,22 @@ export default function Footer() {
             <div>
               <div className="flex flex-col gap-5">
                 <h4 className="text-lg font-semibold text-orange-400">
-                  Airport Pick Up & Drop
+                  Airports Pick Up & Drop
                 </h4>
                 <div className="space-y-2">
-                  <p className="text-gray-300 text-sm">Ahmedabad Airport</p>
-                  <p className="text-gray-300 text-sm">Surat Airport</p>
-                  <p className="text-gray-300 text-sm">Vadodara Airport</p>
-                  <p className="text-gray-300 text-sm">Rajkot Airport</p>
-                  <p className="text-gray-300 text-sm">Bhuj Airport</p>
+                  <p className="text-gray-300 text-sm">Ahmedabad to Surat</p>
+                  <p className="text-gray-300 text-sm">Surat to Vadodara</p>
+                  <p className="text-gray-300 text-sm">Vadodara to Ahmedabad</p>
+                  <p className="text-gray-300 text-sm">Rajkot to Bhavnagar</p>
+                  <p className="text-gray-300 text-sm">Bhuj to Gandhidham</p>
+                </div>
+                <div className="pt-3">
+                  <Link
+                    href="/airports"
+                    className="text-orange-400 text-sm font-semibold hover:underline"
+                  >
+                    View all airports →
+                  </Link>
                 </div>
               </div>
             </div>

@@ -56,6 +56,24 @@ export default function EditBlogPage() {
   const [fetching, setFetching] = useState(true);
   const [showRevisions, setShowRevisions] = useState(false);
   const [lastSaved, setLastSaved] = useState(null);
+  const [showPublishModal, setShowPublishModal] = useState(false);
+  const [publishChoice, setPublishChoice] = useState("routes");
+  const [routeForm, setRouteForm] = useState({
+    from: "",
+    to: "",
+    name: "",
+    url: "",
+  });
+  const [cityForm, setCityForm] = useState({
+    name: "",
+    url: "",
+  });
+  const [airportForm, setAirportForm] = useState({
+    name: "",
+    from: "",
+    to: "",
+    url: "",
+  });
 
   const addFAQ = () => {
     setData(prev => ({
@@ -205,8 +223,7 @@ export default function EditBlogPage() {
     }
   };
 
-  const handleSubmit = async (e) => {
-    if (e) e.preventDefault();
+  const handleSaveWithRoute = async (routePayload = null, cityPayload = null, airportPayload = null) => {
     setLoading(true);
 
     try {
@@ -221,9 +238,6 @@ export default function EditBlogPage() {
       formData.append("faqs", JSON.stringify(data.faqs));
       formData.append("categories", JSON.stringify(data.categories));
       formData.append("tags", JSON.stringify(data.tags));
-      formData.append("routes", JSON.stringify([]));
-      formData.append("cities", JSON.stringify([]));
-      formData.append("airports", JSON.stringify([]));
       formData.append("status", data.status);
       if (data.scheduledAt) formData.append("scheduledAt", data.scheduledAt);
       if (data.canonicalUrl) formData.append("canonicalUrl", data.canonicalUrl);
@@ -257,6 +271,103 @@ export default function EditBlogPage() {
           console.error("Failed to save revision:", error);
         }
 
+        if (routePayload) {
+          const payload = {
+            name: routePayload.name?.trim() || data.title,
+            from: routePayload.from?.trim(),
+            to: routePayload.to?.trim(),
+            url: routePayload.url?.trim() || data.slug,
+            blogId: id,
+          };
+
+          if (!payload.from || !payload.to || !payload.url || !payload.name) {
+            toast.error("Route details are required");
+            setLoading(false);
+            return;
+          }
+
+          try {
+            const routeRes = await fetch("/api/routes", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+            });
+            const routeData = await routeRes.json();
+            if (routeData.success) {
+              toast.success("Route created from blog");
+            } else {
+              toast.error(routeData.message || "Blog updated but route failed");
+            }
+          } catch (routeError) {
+            console.error("Error creating route:", routeError);
+            toast.error("Blog updated but route creation failed");
+          }
+        }
+
+        if (cityPayload) {
+          const payload = {
+            name: cityPayload.name?.trim(),
+            url: cityPayload.url?.trim() || data.slug,
+            blogId: id,
+          };
+
+          if (!payload.name || !payload.url) {
+            toast.error("City details are required");
+            setLoading(false);
+            return;
+          }
+
+          try {
+            const cityRes = await fetch("/api/cities", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+            });
+            const cityData = await cityRes.json();
+            if (cityData.success) {
+              toast.success("City created from blog");
+            } else {
+              toast.error(cityData.message || "Blog updated but city failed");
+            }
+          } catch (cityError) {
+            console.error("Error creating city:", cityError);
+            toast.error("Blog updated but city creation failed");
+          }
+        }
+
+        if (airportPayload) {
+          const payload = {
+            name: airportPayload.name?.trim(),
+            from: airportPayload.from?.trim(),
+            to: airportPayload.to?.trim(),
+            url: airportPayload.url?.trim() || data.slug,
+            blogId: id,
+          };
+
+          if (!payload.name || !payload.from || !payload.to || !payload.url) {
+            toast.error("Airport details are required");
+            setLoading(false);
+            return;
+          }
+
+          try {
+            const airportRes = await fetch("/api/airports", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+            });
+            const airportData = await airportRes.json();
+            if (airportData.success) {
+              toast.success("Airport created from blog");
+            } else {
+              toast.error(airportData.message || "Blog updated but airport failed");
+            }
+          } catch (airportError) {
+            console.error("Error creating airport:", airportError);
+            toast.error("Blog updated but airport creation failed");
+          }
+        }
+
         toast.success(result.message);
         router.push("/admin/blog/manage");
       } else {
@@ -267,7 +378,63 @@ export default function EditBlogPage() {
       toast.error("Something went wrong...");
     } finally {
       setLoading(false);
+      setShowPublishModal(false);
     }
+  };
+
+  const handleConfirmPublish = async () => {
+    if (publishChoice === "routes") {
+      if (!routeForm.from.trim() || !routeForm.to.trim()) {
+        toast.error("Please fill From and To");
+        return;
+      }
+      await handleSaveWithRoute({
+        ...routeForm,
+        name: routeForm.name || data.title,
+        url: routeForm.url || data.slug,
+      }, null, null);
+    } else if (publishChoice === "cities") {
+      if (!cityForm.name.trim()) {
+        toast.error("Please fill City Name");
+        return;
+      }
+      await handleSaveWithRoute(null, {
+        ...cityForm,
+        url: cityForm.url || data.slug,
+      }, null);
+    } else if (publishChoice === "airport") {
+      if (!airportForm.name.trim() || !airportForm.from.trim() || !airportForm.to.trim()) {
+        toast.error("Please fill Airport Name, From and To");
+        return;
+      }
+      await handleSaveWithRoute(null, null, {
+        ...airportForm,
+        url: airportForm.url || data.slug,
+      });
+    } else {
+      await handleSaveWithRoute(null, null, null);
+    }
+  };
+
+  const handlePublishClick = () => {
+    setRouteForm({
+      from: "",
+      to: "",
+      name: data.title || "",
+      url: data.slug || "",
+    });
+    setCityForm({
+      name: "",
+      url: data.slug || "",
+    });
+    setAirportForm({
+      name: data.title || "",
+      from: "",
+      to: "",
+      url: data.slug || "",
+    });
+    setPublishChoice("routes");
+    setShowPublishModal(true);
   };
 
   if (fetching) {
@@ -287,7 +454,13 @@ export default function EditBlogPage() {
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Main Content Area - 70% */}
         <div className="flex-1 bg-white p-6 rounded-xl shadow-md space-y-4">
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handlePublishClick();
+            }}
+            className="space-y-4"
+          >
         <div>
           <label className="block font-semibold dark:text-black">Title</label>
           <input
@@ -455,7 +628,7 @@ export default function EditBlogPage() {
             preview={preview}
             existingImage={existingImage}
             onImageChange={handleImageChange}
-            onSubmit={handleSubmit}
+            onSubmit={handlePublishClick}
             loading={loading}
             isEdit={true}
           />
@@ -495,6 +668,176 @@ export default function EditBlogPage() {
           </p>
         )}
       </div>
+
+      {showPublishModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-lg">
+            <div className="flex items-center justify-between border-b px-4 py-3">
+              <h3 className="text-lg font-semibold text-gray-800">After updating</h3>
+              <button onClick={() => setShowPublishModal(false)} className="text-gray-500 hover:text-gray-800">
+                ✕
+              </button>
+            </div>
+
+            <div className="p-4 space-y-4">
+              <p className="text-sm text-gray-700">Choose where to link this blog:</p>
+              <div className="grid grid-cols-2 gap-3">
+                {["routes", "cities", "airport", "skip"].map((option) => (
+                  <button
+                    key={option}
+                    type="button"
+                    onClick={() => setPublishChoice(option)}
+                    className={`border rounded-md px-3 py-2 text-sm font-semibold capitalize ${
+                      publishChoice === option ? "border-orange-500 bg-orange-50 text-orange-700" : "border-gray-200 text-gray-700"
+                    }`}
+                  >
+                    {option}
+                  </button>
+                ))}
+              </div>
+
+              {publishChoice === "routes" && (
+                <div className="space-y-3 border rounded-md p-3 bg-gray-50">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-800">Route name</label>
+                    <input
+                      type="text"
+                      value={routeForm.name}
+                      onChange={(e) => setRouteForm({ ...routeForm, name: e.target.value })}
+                      className="w-full border rounded-md p-2 text-sm"
+                      placeholder="Auto-filled from blog title"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-800">From</label>
+                      <input
+                        type="text"
+                        value={routeForm.from}
+                        onChange={(e) => setRouteForm({ ...routeForm, from: e.target.value })}
+                        className="w-full border rounded-md p-2 text-sm"
+                        placeholder="Ahmedabad"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-800">To</label>
+                      <input
+                        type="text"
+                        value={routeForm.to}
+                        onChange={(e) => setRouteForm({ ...routeForm, to: e.target.value })}
+                        className="w-full border rounded-md p-2 text-sm"
+                        placeholder="Vadodara"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-800">URL</label>
+                    <input
+                      type="text"
+                      value={routeForm.url}
+                      onChange={(e) => setRouteForm({ ...routeForm, url: e.target.value })}
+                      className="w-full border rounded-md p-2 text-sm"
+                      placeholder="Auto-filled from blog slug"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Use the full path you want to open.</p>
+                  </div>
+                </div>
+              )}
+
+              {publishChoice === "cities" && (
+                <div className="space-y-3 border rounded-md p-3 bg-gray-50">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-800">City Name</label>
+                    <input
+                      type="text"
+                      value={cityForm.name}
+                      onChange={(e) => setCityForm({ ...cityForm, name: e.target.value })}
+                      className="w-full border rounded-md p-2 text-sm"
+                      placeholder="Enter city name"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-800">URL</label>
+                    <input
+                      type="text"
+                      value={cityForm.url}
+                      onChange={(e) => setCityForm({ ...cityForm, url: e.target.value })}
+                      className="w-full border rounded-md p-2 text-sm"
+                      placeholder="Auto-filled from blog slug"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Use the full path you want to open.</p>
+                  </div>
+                </div>
+              )}
+
+              {publishChoice === "airport" && (
+                <div className="space-y-3 border rounded-md p-3 bg-gray-50">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-800">Airport Name</label>
+                    <input
+                      type="text"
+                      value={airportForm.name}
+                      onChange={(e) => setAirportForm({ ...airportForm, name: e.target.value })}
+                      className="w-full border rounded-md p-2 text-sm"
+                      placeholder="Enter airport name"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-800">From</label>
+                      <input
+                        type="text"
+                        value={airportForm.from}
+                        onChange={(e) => setAirportForm({ ...airportForm, from: e.target.value })}
+                        className="w-full border rounded-md p-2 text-sm"
+                        placeholder="Ahmedabad"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-800">To</label>
+                      <input
+                        type="text"
+                        value={airportForm.to}
+                        onChange={(e) => setAirportForm({ ...airportForm, to: e.target.value })}
+                        className="w-full border rounded-md p-2 text-sm"
+                        placeholder="Vadodara"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-800">URL</label>
+                    <input
+                      type="text"
+                      value={airportForm.url}
+                      onChange={(e) => setAirportForm({ ...airportForm, url: e.target.value })}
+                      className="w-full border rounded-md p-2 text-sm"
+                      placeholder="Auto-filled from blog slug"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Use the full path you want to open.</p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="border-t px-4 py-3 flex justify-end gap-3">
+              <button
+                onClick={() => setShowPublishModal(false)}
+                className="px-4 py-2 rounded-md border text-sm font-semibold text-gray-700"
+                disabled={loading}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmPublish}
+                className="px-4 py-2 rounded-md bg-orange-600 text-white text-sm font-semibold disabled:opacity-50"
+                disabled={loading}
+              >
+                {loading ? "Saving..." : "Update & Continue"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

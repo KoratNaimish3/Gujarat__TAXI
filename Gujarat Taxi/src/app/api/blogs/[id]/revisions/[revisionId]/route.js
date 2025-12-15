@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import connectDB from "../../../../../../lib/db";
-import BlogRevision from "../../../../../../models/blogRevision";
-import BLOG from "../../../../../../models/blog";
+import connectDB from "../../../../../lib/db";
+import BlogRevision from "../../../../../models/blogRevision";
+import BLOG from "../../../../../models/blog";
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
@@ -106,6 +106,7 @@ export async function POST(req, { params }) {
         );
     }
 }
+
 
 
 
