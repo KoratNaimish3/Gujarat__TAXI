@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import connectDB from "../../../lib/db";
 import Media from "../../../models/media";
 import cloudinary from "../../../lib/cloudinary";
+import { createAuditLog, getClientIP, getUserAgent } from "../../../lib/auditLog.js";
+import { requirePermission } from "../../../lib/auth.js";
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
@@ -43,6 +45,12 @@ export async function GET(req, { params }) {
 // PUT /api/media/[id] - Update media
 export async function PUT(req, { params }) {
     try {
+        // Require permission to manage media
+        const authData = await requirePermission(req, "canManageMedia");
+        if (authData instanceof NextResponse) {
+            return authData; // Return error response
+        }
+
         await connectDB();
 
         const { id } = await params;
@@ -100,6 +108,17 @@ export async function PUT(req, { params }) {
             _id: updatedMedia._id.toString(),
         };
 
+        // Create audit log
+        await createAuditLog({
+            userId: authData.admin._id,
+            action: "update",
+            resourceType: "media",
+            resourceId: serializedMedia._id,
+            details: `Updated media: ${serializedMedia.filePath || 'media file'}`,
+            ipAddress: getClientIP(req),
+            userAgent: getUserAgent(req),
+        });
+
         return NextResponse.json(
             {
                 success: true,
@@ -120,6 +139,12 @@ export async function PUT(req, { params }) {
 // DELETE /api/media/[id] - Delete media
 export async function DELETE(req, { params }) {
     try {
+        // Require permission to manage media
+        const authData = await requirePermission(req, "canManageMedia");
+        if (authData instanceof NextResponse) {
+            return authData; // Return error response
+        }
+
         await connectDB();
 
         const { id } = await params;
@@ -142,6 +167,17 @@ export async function DELETE(req, { params }) {
 
         // Delete from database
         await Media.findByIdAndDelete(id);
+
+        // Create audit log
+        await createAuditLog({
+            userId: authData.admin._id,
+            action: "delete",
+            resourceType: "media",
+            resourceId: media._id,
+            details: `Deleted media: ${media.filePath || 'media file'}`,
+            ipAddress: getClientIP(req),
+            userAgent: getUserAgent(req),
+        });
 
         return NextResponse.json(
             { success: true, message: "Media deleted successfully" },

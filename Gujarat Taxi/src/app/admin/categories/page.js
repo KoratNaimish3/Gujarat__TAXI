@@ -308,17 +308,6 @@ export default function CategoriesPage() {
                             </div>
                         </div>
 
-                        <div>
-                            <label className="block font-semibold mb-2">Image URL</label>
-                            <input
-                                type="url"
-                                value={formData.image}
-                                onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                                className="w-full border rounded-md p-2 bg-white text-black border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-400"
-                                placeholder="https://example.com/image.jpg"
-                            />
-                        </div>
-
                         <div className="flex gap-3">
                             <button
                                 type="submit"
@@ -357,6 +346,8 @@ export default function CategoriesPage() {
         </div>
     );
 }
+
+
 
 
 

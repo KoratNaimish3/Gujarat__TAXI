@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import connectDB from "../../lib/db";
 import BLOG from "../../models/blog";
 import cloudinary from "../../lib/cloudinary";
+import { createAuditLog, getClientIP, getUserAgent } from "../../lib/auditLog.js";
+import { requirePermission } from "../../lib/auth.js";
 
 // Force dynamic rendering - disable caching
 export const dynamic = 'force-dynamic';
@@ -10,6 +12,12 @@ export const revalidate = 0;
 // POST /api/blogs → Create new blog
 export async function POST(req) {
     try {
+        // Require permission to create blogs
+        const authData = await requirePermission(req, "canCreateBlog");
+        if (authData instanceof NextResponse) {
+            return authData; // Return error response
+        }
+
         await connectDB()
 
         const formData = await req.formData();
@@ -125,6 +133,17 @@ export async function POST(req) {
             }
 
             const newBlog = await BLOG.create(blogData);
+
+            // Create audit log
+            await createAuditLog({
+                userId: authData.admin._id,
+                action: "create",
+                resourceType: "blog",
+                resourceId: newBlog._id,
+                details: `Created blog: ${newBlog.title}`,
+                ipAddress: getClientIP(req),
+                userAgent: getUserAgent(req),
+            });
 
             console.log(publicId)
 

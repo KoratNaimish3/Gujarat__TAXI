@@ -25,7 +25,20 @@ const auditLogSchema = new mongoose.Schema(
         resourceType: {
             type: String,
             required: true,
-            enum: ["blog", "category", "tag", "media", "redirect", "user", "system"],
+            enum: [
+                "blog", 
+                "category", 
+                "tag", 
+                "media", 
+                "redirect", 
+                "user", 
+                "system",
+                "booking",
+                "route",
+                "city",
+                "airport",
+                "seo"
+            ],
         },
         resourceId: {
             type: mongoose.Schema.Types.ObjectId,
@@ -56,6 +69,9 @@ auditLogSchema.index({ createdAt: -1 });
 const AuditLog = mongoose.models.AuditLog || mongoose.model("AuditLog", auditLogSchema);
 
 export default AuditLog;
+
+
+
 
 
 

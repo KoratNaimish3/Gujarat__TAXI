@@ -1,63 +1,66 @@
 import mongoose from "mongoose";
 
-const roleSchema = new mongoose.Schema(
-    {
-        name: {
-            type: String,
-            required: true,
-            unique: true,
-        },
-        slug: {
-            type: String,
-            required: true,
-            unique: true,
-        },
-        description: {
-            type: String,
-            default: "",
-        },
-        permissions: {
-            // Blog permissions
-            blogCreate: { type: Boolean, default: false },
-            blogEdit: { type: Boolean, default: false },
-            blogDelete: { type: Boolean, default: false },
-            blogPublish: { type: Boolean, default: false },
-            blogView: { type: Boolean, default: false },
-
-            // Category & Tag permissions
-            categoryManage: { type: Boolean, default: false },
-            tagManage: { type: Boolean, default: false },
-
-            // Media permissions
-            mediaUpload: { type: Boolean, default: false },
-            mediaDelete: { type: Boolean, default: false },
-            mediaView: { type: Boolean, default: false },
-
-            // SEO permissions
-            seoManage: { type: Boolean, default: false },
-            redirectManage: { type: Boolean, default: false },
-
-            // User management permissions
-            userManage: { type: Boolean, default: false },
-            roleManage: { type: Boolean, default: false },
-
-            // System permissions
-            auditView: { type: Boolean, default: false },
-            settingsManage: { type: Boolean, default: false },
-        },
+const roleSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true,
+        unique: true,
     },
-    { timestamps: true }
-);
-
-// Create unique index on slug
-roleSchema.index({ slug: 1 }, { unique: true });
+    slug: {
+        type: String,
+        required: true,
+        unique: true,
+        lowercase: true,
+    },
+    description: {
+        type: String,
+        default: "",
+    },
+    permissions: {
+        // Blog management
+        canViewBlog: { type: Boolean, default: false },
+        canCreateBlog: { type: Boolean, default: false },
+        canEditBlog: { type: Boolean, default: false },
+        canDeleteBlog: { type: Boolean, default: false },
+        canPublishBlog: { type: Boolean, default: false },
+        
+        // User management
+        canViewUsers: { type: Boolean, default: false },
+        canCreateUser: { type: Boolean, default: false },
+        canEditUser: { type: Boolean, default: false },
+        canDeleteUser: { type: Boolean, default: false },
+        canAssignRole: { type: Boolean, default: false },
+        
+        // Content management
+        canManageCategories: { type: Boolean, default: false },
+        canManageTags: { type: Boolean, default: false },
+        canManageMedia: { type: Boolean, default: false },
+        
+        // Routes, Cities, Airports management
+        canManageRoutes: { type: Boolean, default: false },
+        canManageCities: { type: Boolean, default: false },
+        canManageAirports: { type: Boolean, default: false },
+        
+        // SEO management
+        canManageSEO: { type: Boolean, default: false },
+        
+        // Booking management
+        canViewBookings: { type: Boolean, default: false },
+        canManageBookings: { type: Boolean, default: false },
+        
+        // System settings
+        canManageSettings: { type: Boolean, default: false },
+        canViewAuditLogs: { type: Boolean, default: false },
+        
+        // Super admin - has all permissions
+        isSuperAdmin: { type: Boolean, default: false },
+    },
+    isActive: {
+        type: Boolean,
+        default: true,
+    },
+}, { timestamps: true });
 
 const Role = mongoose.models.Role || mongoose.model("Role", roleSchema);
 
 export default Role;
-
-
-
-
-
-

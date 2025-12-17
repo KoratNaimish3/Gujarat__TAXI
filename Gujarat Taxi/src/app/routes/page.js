@@ -74,7 +74,7 @@ export default function RoutesDirectoryPage() {
             {sortedFromKeys.map((fromKey) => (
               <div key={fromKey} className="border border-gray-200 rounded-xl p-4">
                 <div className="flex items-center justify-between mb-3">
-                  <h2 className="text-xl font-semibold text-gray-900">
+                  <h2 className="text-xl font-semibold text-orange-900">
                     {fromKey}
                   </h2>
                   <span className="text-xs text-gray-500">

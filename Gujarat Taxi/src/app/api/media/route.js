@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import connectDB from "../../lib/db";
 import Media from "../../models/media";
+import { createAuditLog, getClientIP, getUserAgent } from "../../lib/auditLog.js";
+import { requirePermission } from "../../lib/auth.js";
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
@@ -157,6 +159,12 @@ export async function GET(req) {
 // DELETE /api/media - Delete media (bulk)
 export async function DELETE(req) {
     try {
+        // Require permission to manage media
+        const authData = await requirePermission(req, "canManageMedia");
+        if (authData instanceof NextResponse) {
+            return authData; // Return error response
+        }
+
         await connectDB();
 
         const body = await req.json();
@@ -177,6 +185,17 @@ export async function DELETE(req) {
 
         // TODO: Delete from Cloudinary using publicId
         // This would require cloudinary import and delete calls
+
+        // Create audit log
+        await createAuditLog({
+            userId: authData.admin._id,
+            action: "delete",
+            resourceType: "media",
+            resourceId: ids[0] || null, // Log first ID as reference
+            details: `Bulk deleted ${ids.length} media file(s)`,
+            ipAddress: getClientIP(req),
+            userAgent: getUserAgent(req),
+        });
 
         return NextResponse.json(
             {

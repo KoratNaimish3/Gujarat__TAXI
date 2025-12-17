@@ -9,6 +9,41 @@ import { Pencil, Trash2, Clock, CheckCircle, FileText, Archive } from "lucide-re
 export default function AllBlogsPage() {
     const [blogs, setBlogs] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [permissions, setPermissions] = useState({});
+    const [permissionsLoading, setPermissionsLoading] = useState(true);
+
+    // Fetch user permissions
+    useEffect(() => {
+        const fetchPermissions = async () => {
+            try {
+                const res = await fetch("/api/admin/me", { cache: "no-store" });
+                const data = await res.json();
+                if (data.success) {
+                    // Check both possible locations for permissions
+                    const userPermissions = data.permissions || (data.user && data.user.permissions) || {};
+                    setPermissions(userPermissions);
+                }
+            } catch (error) {
+                console.error("Error fetching permissions:", error);
+            } finally {
+                setPermissionsLoading(false);
+            }
+        };
+        fetchPermissions();
+    }, []);
+
+    // Helper function to check permissions
+    const hasPermission = (permission) => {
+        if (!permissions || Object.keys(permissions).length === 0) {
+            return false;
+        }
+        // Super admin has all permissions
+        if (permissions.isSuperAdmin === true) {
+            return true;
+        }
+        // Check specific permission
+        return permissions[permission] === true;
+    };
 
     const fetchBlogs = async () => {
         try {
@@ -187,23 +222,35 @@ export default function AllBlogsPage() {
                                     </td>
 
                                     <td className="px-2 md:px-4 py-2 md:py-3 text-center">
-                                        <div className="flex items-center justify-center gap-2 md:gap-3">
-                                            <Link
-                                                href={`/admin/blog/edit/${blog._id}`}
-                                                className="text-blue-600 hover:text-blue-800"
-                                                title="Edit"
-                                            >
-                                                <Pencil size={16} className="md:w-[18px] md:h-[18px]" />
-                                            </Link>
+                                        {permissionsLoading ? (
+                                            <span className="text-gray-400 text-xs">Loading...</span>
+                                        ) : (
+                                            <div className="flex items-center justify-center gap-2 md:gap-3">
+                                                {hasPermission("canEditBlog") && (
+                                                    <Link
+                                                        href={`/admin/blog/edit/${blog._id}`}
+                                                        className="text-blue-600 hover:text-blue-800"
+                                                        title="Edit"
+                                                    >
+                                                        <Pencil size={16} className="md:w-[18px] md:h-[18px]" />
+                                                    </Link>
+                                                )}
 
-                                            <button
-                                                onClick={() => handleDelete(blog._id)}
-                                                className="text-red-600 hover:text-red-800"
-                                                title="Delete"
-                                            >
-                                                <Trash2 size={16} className="md:w-[18px] md:h-[18px]" />
-                                            </button>
-                                        </div>
+                                                {hasPermission("canDeleteBlog") && (
+                                                    <button
+                                                        onClick={() => handleDelete(blog._id)}
+                                                        className="text-red-600 hover:text-red-800"
+                                                        title="Delete"
+                                                    >
+                                                        <Trash2 size={16} className="md:w-[18px] md:h-[18px]" />
+                                                    </button>
+                                                )}
+                                                
+                                                {!hasPermission("canEditBlog") && !hasPermission("canDeleteBlog") && (
+                                                    <span className="text-gray-400 text-xs">No actions available</span>
+                                                )}
+                                            </div>
+                                        )}
                                     </td>
                                 </tr>
                             ))}

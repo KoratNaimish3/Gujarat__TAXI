@@ -43,9 +43,13 @@ export default function AuditLogsPage() {
             if (data.success) {
                 setLogs(data.logs || []);
                 setTotalPages(data.pagination?.pages || 1);
+            } else {
+                console.error("Failed to fetch audit logs:", data.message);
+                setLogs([]);
             }
         } catch (error) {
             console.error("Error fetching audit logs:", error);
+            setLogs([]);
         } finally {
             setLoading(false);
         }
@@ -56,7 +60,9 @@ export default function AuditLogsPage() {
             ["Date", "User", "Action", "Resource Type", "Resource ID", "Details", "IP Address"],
             ...logs.map(log => [
                 new Date(log.createdAt).toLocaleString(),
-                typeof log.userId === 'object' ? log.userId.userName : 'Unknown',
+                (log.userId && typeof log.userId === 'object' && log.userId !== null) 
+                    ? (log.userId.userName || log.userId.email || 'Unknown User') 
+                    : 'Unknown',
                 log.action,
                 log.resourceType,
                 log.resourceId || "",
@@ -211,9 +217,22 @@ export default function AuditLogsPage() {
 
             {/* Logs Table */}
             {loading ? (
-                <p className="text-gray-600">Loading audit logs...</p>
+                <div className="flex items-center justify-center py-12">
+                    <div className="text-center">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto mb-4"></div>
+                        <p className="text-gray-600">Loading audit logs...</p>
+                    </div>
+                </div>
             ) : logs.length === 0 ? (
-                <p className="text-gray-500">No audit logs found</p>
+                <div className="bg-white border rounded-lg p-12 text-center">
+                    <Activity size={48} className="mx-auto text-gray-400 mb-4" />
+                    <h3 className="text-lg font-semibold text-gray-800 mb-2">No Audit Logs Found</h3>
+                    <p className="text-gray-500">
+                        {Object.values(filters).some(f => f) 
+                            ? "Try adjusting your filters to see more results."
+                            : "Audit logs will appear here as actions are performed in the admin panel."}
+                    </p>
+                </div>
             ) : (
                 <>
                     <div className="bg-white border rounded-lg shadow overflow-x-auto">
@@ -246,8 +265,8 @@ export default function AuditLogsPage() {
                                             <div className="flex items-center gap-2">
                                                 <User size={14} className="text-gray-400" />
                                                 <span className="text-gray-900">
-                                                    {typeof log.userId === 'object'
-                                                        ? log.userId.userName || log.userId.email
+                                                    {log.userId && typeof log.userId === 'object' && log.userId !== null
+                                                        ? (log.userId.userName || log.userId.email || 'Unknown User')
                                                         : 'Unknown'}
                                                 </span>
                                             </div>
@@ -308,6 +327,7 @@ export default function AuditLogsPage() {
         </div>
     );
 }
+
 
 
 

@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import connectDB from "../../../lib/db";
 import Category from "../../../models/category";
+import { createAuditLog, getClientIP, getUserAgent } from "../../../lib/auditLog.js";
+import { requirePermission } from "../../../lib/auth.js";
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
@@ -42,6 +44,12 @@ export async function GET(req, { params }) {
 // PUT /api/categories/[id] - Update category
 export async function PUT(req, { params }) {
     try {
+        // Require permission to manage categories
+        const authData = await requirePermission(req, "canManageCategories");
+        if (authData instanceof NextResponse) {
+            return authData; // Return error response
+        }
+
         await connectDB();
 
         const { id } = await params;
@@ -89,6 +97,17 @@ export async function PUT(req, { params }) {
             { new: true, runValidators: true }
         ).populate('parentId', 'name slug');
 
+        // Create audit log
+        await createAuditLog({
+            userId: authData.admin._id,
+            action: "update",
+            resourceType: "category",
+            resourceId: updatedCategory._id,
+            details: `Updated category: ${updatedCategory.name}`,
+            ipAddress: getClientIP(req),
+            userAgent: getUserAgent(req),
+        });
+
         return NextResponse.json(
             {
                 success: true,
@@ -109,6 +128,12 @@ export async function PUT(req, { params }) {
 // DELETE /api/categories/[id] - Delete category
 export async function DELETE(req, { params }) {
     try {
+        // Require permission to manage categories
+        const authData = await requirePermission(req, "canManageCategories");
+        if (authData instanceof NextResponse) {
+            return authData; // Return error response
+        }
+
         await connectDB();
 
         const { id } = await params;
@@ -132,6 +157,17 @@ export async function DELETE(req, { params }) {
 
         await Category.findByIdAndDelete(id);
 
+        // Create audit log
+        await createAuditLog({
+            userId: authData.admin._id,
+            action: "delete",
+            resourceType: "category",
+            resourceId: category._id,
+            details: `Deleted category: ${category.name}`,
+            ipAddress: getClientIP(req),
+            userAgent: getUserAgent(req),
+        });
+
         return NextResponse.json(
             { success: true, message: "Category deleted successfully" },
             { status: 200 }
@@ -144,6 +180,9 @@ export async function DELETE(req, { params }) {
         );
     }
 }
+
+
+
 
 
 

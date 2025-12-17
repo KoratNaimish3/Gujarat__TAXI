@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import connectDB from "../../../lib/db";
 import Tag from "../../../models/tag";
+import { createAuditLog, getClientIP, getUserAgent } from "../../../lib/auditLog.js";
+import { requirePermission } from "../../../lib/auth.js";
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
@@ -42,6 +44,12 @@ export async function GET(req, { params }) {
 // PUT /api/tags/[id] - Update tag
 export async function PUT(req, { params }) {
     try {
+        // Require permission to manage tags
+        const authData = await requirePermission(req, "canManageTags");
+        if (authData instanceof NextResponse) {
+            return authData; // Return error response
+        }
+
         await connectDB();
 
         const { id } = await params;
@@ -87,6 +95,17 @@ export async function PUT(req, { params }) {
             { new: true, runValidators: true }
         );
 
+        // Create audit log
+        await createAuditLog({
+            userId: authData.admin._id,
+            action: "update",
+            resourceType: "tag",
+            resourceId: updatedTag._id,
+            details: `Updated tag: ${updatedTag.name}`,
+            ipAddress: getClientIP(req),
+            userAgent: getUserAgent(req),
+        });
+
         return NextResponse.json(
             {
                 success: true,
@@ -113,6 +132,12 @@ export async function PUT(req, { params }) {
 // DELETE /api/tags/[id] - Delete tag
 export async function DELETE(req, { params }) {
     try {
+        // Require permission to manage tags
+        const authData = await requirePermission(req, "canManageTags");
+        if (authData instanceof NextResponse) {
+            return authData; // Return error response
+        }
+
         await connectDB();
 
         const { id } = await params;
@@ -127,6 +152,17 @@ export async function DELETE(req, { params }) {
 
         await Tag.findByIdAndDelete(id);
 
+        // Create audit log
+        await createAuditLog({
+            userId: authData.admin._id,
+            action: "delete",
+            resourceType: "tag",
+            resourceId: tag._id,
+            details: `Deleted tag: ${tag.name}`,
+            ipAddress: getClientIP(req),
+            userAgent: getUserAgent(req),
+        });
+
         return NextResponse.json(
             { success: true, message: "Tag deleted successfully" },
             { status: 200 }
@@ -139,6 +175,9 @@ export async function DELETE(req, { params }) {
         );
     }
 }
+
+
+
 
 
 

@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import connectDB from "../../../lib/db"
 import BLOG from "../../../models/blog"
 import cloudinary from "@/app/lib/cloudinary";
+import { createAuditLog, getClientIP, getUserAgent } from "../../../lib/auditLog.js";
+import { requirePermission, hasPermission } from "../../../lib/auth.js";
 
 // Force dynamic rendering - disable caching
 export const dynamic = 'force-dynamic';
@@ -93,6 +95,12 @@ export async function GET(req, { params }) {
 // PUT /api/blogs/[id] → Update blog
 export async function PUT(req, { params }) {
     try {
+        // Require permission to edit blogs
+        const authData = await requirePermission(req, "canEditBlog");
+        if (authData instanceof NextResponse) {
+            return authData; // Return error response
+        }
+
         await connectDB();
 
         const { id } = await params;
@@ -101,6 +109,28 @@ export async function PUT(req, { params }) {
         const blog = await BLOG.findById(id);
         if (!blog) {
             return NextResponse.json({ success: false, message: "Blog not found" }, { status: 404 });
+        }
+
+        const status = formData.get("status") || blog.status;
+        
+        // Check if trying to publish - requires canPublishBlog permission
+        if (status === "published" && blog.status !== "published") {
+            if (!hasPermission(authData.role, "canPublishBlog")) {
+                return NextResponse.json(
+                    { success: false, message: "You don't have permission to publish blogs" },
+                    { status: 403 }
+                );
+            }
+        }
+        
+        // Check if trying to schedule - requires canPublishBlog permission
+        if (status === "scheduled") {
+            if (!hasPermission(authData.role, "canPublishBlog")) {
+                return NextResponse.json(
+                    { success: false, message: "You don't have permission to schedule blogs" },
+                    { status: 403 }
+                );
+            }
         }
 
         const title = formData.get("title");
@@ -154,7 +184,6 @@ export async function PUT(req, { params }) {
         const canonicalUrl = formData.get("canonicalUrl");
         const featuredImageAlt = formData.get("featuredImageAlt");
         const imageFile = formData.get("image");
-        const status = formData.get("status") || blog.status;
 
         // Check if slug is being changed and if it already exists
         if (slug && slug !== blog.slug) {
@@ -243,6 +272,20 @@ export async function PUT(req, { params }) {
             { new: true, runValidators: true }
         );
 
+        // Create audit log
+        const action = status === "published" && blog.status !== "published" ? "publish" : 
+                      status === "scheduled" ? "schedule" : "update";
+        
+        await createAuditLog({
+            userId: authData.admin._id,
+            action: action,
+            resourceType: "blog",
+            resourceId: updatedBlog._id,
+            details: `${action === "publish" ? "Published" : action === "schedule" ? "Scheduled" : "Updated"} blog: ${updatedBlog.title}`,
+            ipAddress: getClientIP(req),
+            userAgent: getUserAgent(req),
+        });
+
         return NextResponse.json(
             { message: "Blog updated successfully!", blog: updatedBlog, success: true },
             { status: 200 }
@@ -258,6 +301,12 @@ export async function PUT(req, { params }) {
 
 export async function DELETE(req, { params }) {
     try {
+        // Require permission to delete blogs
+        const authData = await requirePermission(req, "canDeleteBlog");
+        if (authData instanceof NextResponse) {
+            return authData; // Return error response
+        }
+
         await connectDB();
 
         const {id}= await params
@@ -277,6 +326,17 @@ export async function DELETE(req, { params }) {
         }
 
         const res = await BLOG.findByIdAndDelete(id);
+
+        // Create audit log
+        await createAuditLog({
+            userId: authData.admin._id,
+            action: "delete",
+            resourceType: "blog",
+            resourceId: id,
+            details: `Deleted blog: ${blog.title}`,
+            ipAddress: getClientIP(req),
+            userAgent: getUserAgent(req),
+        });
 
         return NextResponse.json({ message: "Blog deleted successfully", success: true }, { status: 200 });
         

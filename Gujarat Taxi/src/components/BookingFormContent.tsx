@@ -248,7 +248,7 @@ export default function BookingFormContent({ onSuccess, showHeader = true }: Boo
           <p className="text-xl md:text-2xl font-bold text-orange-600">{bookingId}</p>
         </div>
         <a href="tel:+919512870958 " className="btn-primary inline-block">
-          +91 9512870958 
+          +91 9512870958
         </a>
       </div>
     );
@@ -328,9 +328,9 @@ export default function BookingFormContent({ onSuccess, showHeader = true }: Boo
                           timeFormat="hh:mm aa"
                           dateFormat="MMMM d, yyyy h:mm aa"
                           minDate={new Date()}
-                           popperClassName="z-50" // ✅ ensures it appears above everything
-                      popperPlacement="bottom-start" // ✅ opens properly below input
-                      portalId="root-portal" // ✅ renders inside body instead of container
+                          popperClassName="z-50" // ✅ ensures it appears above everything
+                          popperPlacement="bottom-start" // ✅ opens properly below input
+                          portalId="root-portal" // ✅ renders inside body instead of container
                           placeholderText="Trip start"
                           className="w-full pl-10 pr-2 h-[48px] rounded-md bg-transparent text-black dark:text-white outline-none"
                         />
@@ -354,9 +354,9 @@ export default function BookingFormContent({ onSuccess, showHeader = true }: Boo
                           timeFormat="hh:mm aa"
                           dateFormat="MMMM d, yyyy h:mm aa"
                           minDate={bookingData.date ? new Date(bookingData.date) : new Date()}
-                           popperClassName="z-50" // ✅ ensures it appears above everything
-                      popperPlacement="bottom-start" // ✅ opens properly below input
-                      portalId="root-portal" // ✅ renders inside body instead of container
+                          popperClassName="z-50" // ✅ ensures it appears above everything
+                          popperPlacement="bottom-start" // ✅ opens properly below input
+                          portalId="root-portal" // ✅ renders inside body instead of container
                           placeholderText="Trip End"
                           className="w-full pl-10 pr-2 h-[48px] rounded-md bg-transparent text-black dark:text-white outline-none"
                         />
@@ -381,9 +381,9 @@ export default function BookingFormContent({ onSuccess, showHeader = true }: Boo
                         timeFormat="hh:mm aa"
                         dateFormat="MMMM d, yyyy h:mm aa"
                         minDate={new Date()}
-                         popperClassName="z-50" // ✅ ensures it appears above everything
-                      popperPlacement="bottom-start" // ✅ opens properly below input
-                      portalId="root-portal" // ✅ renders inside body instead of container
+                        popperClassName="z-50" // ✅ ensures it appears above everything
+                        popperPlacement="bottom-start" // ✅ opens properly below input
+                        portalId="root-portal" // ✅ renders inside body instead of container
                         placeholderText="Trip start"
                         className="w-full pl-10 pr-2 h-[48px] rounded-md bg-transparent text-black dark:text-white outline-none"
                       />
@@ -479,9 +479,9 @@ export default function BookingFormContent({ onSuccess, showHeader = true }: Boo
                         dateFormat="MMMM d, yyyy h:mm aa"
                         minDate={bookingData.date ? new Date(bookingData.date) : new Date()}
                         placeholderText="Trip End"
-                         popperClassName="z-50" // ✅ ensures it appears above everything
-                      popperPlacement="bottom-start" // ✅ opens properly below input
-                      portalId="root-portal" // ✅ renders inside body instead of container
+                        popperClassName="z-50" // ✅ ensures it appears above everything
+                        popperPlacement="bottom-start" // ✅ opens properly below input
+                        portalId="root-portal" // ✅ renders inside body instead of container
                         className="w-full pl-10 pr-2 h-[48px] rounded-md bg-transparent text-black dark:text-white outline-none"
                       />
                     </div>
@@ -495,14 +495,17 @@ export default function BookingFormContent({ onSuccess, showHeader = true }: Boo
                     <Phone className="w-5 h-5 text-gray-400" />
                   </div>
                   <input
-                    type="tel"
+                    type="text"
                     inputMode="numeric"
-                    pattern="[0-9]{10}"
                     maxLength={10}
                     value={bookingData.phone}
-                    onChange={(e) =>
-                      handleInputChange("phone", e.target.value)
-                    }
+                    onChange={(e) => {
+                      handleInputChange("phone", e.target.value);
+                    }}
+                    onKeyPress={(e) => {
+                      if (!/[0-9]/.test(e.key)) e.preventDefault();
+                    }}
+
                     className="w-full border-2 pl-10 pr-2 h-[48px] rounded-md
                                bg-white text-black placeholder-gray-500 border-gray-300
                                dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 dark:border-gray-600

@@ -3,6 +3,7 @@
   import bcrypt from "bcryptjs";
   import Admin from "../../../models/admin.js";
   import connectDB from "../../../lib/db.js";
+  import { createAuditLog, getClientIP, getUserAgent } from "../../../lib/auditLog.js";
 
   export async function POST(req) {
     try {
@@ -29,8 +30,15 @@
         );
       }
 
+      // Populate role to get full role information
+      await admin.populate("role");
+
       const token = jwt.sign(
-        { id: admin._id, role: "admin" },
+        { 
+          id: admin._id, 
+          role: admin.roleSlug || (admin.role?.slug || "admin"),
+          roleId: admin.role?._id || null
+        },
         process.env.JWT_SECRET,
         { expiresIn: "7d" }
       );
@@ -44,6 +52,17 @@
         httpOnly: true,
         maxAge: 60 * 60 * 24 * 7, // 7 days
 
+      });
+
+      // Create audit log for login
+      await createAuditLog({
+        userId: admin._id,
+        action: "login",
+        resourceType: "system",
+        resourceId: null,
+        details: `User logged in: ${admin.email}`,
+        ipAddress: getClientIP(req),
+        userAgent: getUserAgent(req),
       });
 
       return res;

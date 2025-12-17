@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import connectDB from "../../../lib/db";
 import Redirect from "../../../models/redirect";
+import { createAuditLog, getClientIP, getUserAgent } from "../../../lib/auditLog.js";
+import { requirePermission } from "../../../lib/auth.js";
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
@@ -42,6 +44,12 @@ export async function GET(req, { params }) {
 // PUT /api/redirects/[id] - Update redirect
 export async function PUT(req, { params }) {
     try {
+        // Require permission to manage SEO (redirects are part of SEO)
+        const authData = await requirePermission(req, "canManageSEO");
+        if (authData instanceof NextResponse) {
+            return authData; // Return error response
+        }
+
         await connectDB();
 
         const { id } = await params;
@@ -98,6 +106,35 @@ export async function PUT(req, { params }) {
             { new: true, runValidators: true }
         ).populate('createdBy', 'userName email');
 
+        // Create audit log
+        const changes = [];
+        if (fromPath && normalizedFrom !== redirect.fromPath) {
+            changes.push(`From: ${redirect.fromPath} → ${normalizedFrom}`);
+        }
+        if (toPath && normalizedTo !== redirect.toPath) {
+            changes.push(`To: ${redirect.toPath} → ${normalizedTo}`);
+        }
+        if (type !== undefined && type !== redirect.type) {
+            changes.push(`Type: ${redirect.type} → ${type}`);
+        }
+        if (active !== undefined && active !== redirect.active) {
+            changes.push(`Active: ${redirect.active} → ${active}`);
+        }
+
+        const details = changes.length > 0
+            ? `Updated redirect: ${changes.join(', ')}`
+            : `Updated redirect: ${normalizedFrom} → ${normalizedTo}`;
+
+        await createAuditLog({
+            userId: authData.admin._id,
+            action: "update",
+            resourceType: "redirect",
+            resourceId: updatedRedirect._id,
+            details: details,
+            ipAddress: getClientIP(req),
+            userAgent: getUserAgent(req),
+        });
+
         return NextResponse.json(
             {
                 success: true,
@@ -124,6 +161,12 @@ export async function PUT(req, { params }) {
 // DELETE /api/redirects/[id] - Delete redirect
 export async function DELETE(req, { params }) {
     try {
+        // Require permission to manage SEO (redirects are part of SEO)
+        const authData = await requirePermission(req, "canManageSEO");
+        if (authData instanceof NextResponse) {
+            return authData; // Return error response
+        }
+
         await connectDB();
 
         const { id } = await params;
@@ -138,6 +181,17 @@ export async function DELETE(req, { params }) {
 
         await Redirect.findByIdAndDelete(id);
 
+        // Create audit log
+        await createAuditLog({
+            userId: authData.admin._id,
+            action: "delete",
+            resourceType: "redirect",
+            resourceId: redirect._id,
+            details: `Deleted redirect: ${redirect.fromPath} → ${redirect.toPath}`,
+            ipAddress: getClientIP(req),
+            userAgent: getUserAgent(req),
+        });
+
         return NextResponse.json(
             { success: true, message: "Redirect deleted successfully" },
             { status: 200 }
@@ -150,6 +204,9 @@ export async function DELETE(req, { params }) {
         );
     }
 }
+
+
+
 
 
 

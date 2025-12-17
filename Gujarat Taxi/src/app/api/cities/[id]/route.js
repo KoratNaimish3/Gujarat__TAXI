@@ -1,22 +1,43 @@
 import { NextResponse } from "next/server";
 import connectDB from "../../../lib/db";
 import CITY from "../../../models/city";
+import { createAuditLog, getClientIP, getUserAgent } from "../../../lib/auditLog.js";
+import { requirePermission } from "../../../lib/auth.js";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export async function DELETE(req, { params }) {
   try {
-    await connectDB();
-    const { id } = params;
+    // Require permission to manage cities
+    const authData = await requirePermission(req, "canManageCities");
+    if (authData instanceof NextResponse) {
+      return authData; // Return error response
+    }
 
-    const city = await CITY.findByIdAndDelete(id);
+    await connectDB();
+    const { id } = await params;
+
+    const city = await CITY.findById(id);
     if (!city) {
       return NextResponse.json(
         { success: false, message: "City not found" },
         { status: 404 }
       );
     }
+
+    await CITY.findByIdAndDelete(id);
+
+    // Create audit log
+    await createAuditLog({
+      userId: authData.admin._id,
+      action: "delete",
+      resourceType: "city",
+      resourceId: city._id,
+      details: `Deleted city: ${city.name}`,
+      ipAddress: getClientIP(req),
+      userAgent: getUserAgent(req),
+    });
 
     return NextResponse.json(
       { success: true, message: "City deleted successfully" },

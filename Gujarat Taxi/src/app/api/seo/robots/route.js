@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import connectDB from "../../../lib/db";
 import Robots from "../../../models/robots";
+import { createAuditLog, getClientIP, getUserAgent } from "../../../lib/auditLog.js";
+import { requirePermission } from "../../../lib/auth.js";
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
@@ -41,6 +43,12 @@ export async function GET() {
 // PUT /api/seo/robots - Update robots.txt content
 export async function PUT(req) {
     try {
+        // Require permission to manage SEO
+        const authData = await requirePermission(req, "canManageSEO");
+        if (authData instanceof NextResponse) {
+            return authData; // Return error response
+        }
+
         await connectDB();
 
         const body = await req.json();
@@ -73,6 +81,7 @@ export async function PUT(req) {
 
         // Get or create robots document
         let robots = await Robots.findOne();
+        const isNew = !robots;
         if (!robots) {
             robots = await Robots.create({ content });
         } else {
@@ -80,6 +89,17 @@ export async function PUT(req) {
             robots.lastModified = new Date();
             await robots.save();
         }
+
+        // Create audit log
+        await createAuditLog({
+            userId: authData.admin._id,
+            action: isNew ? "create" : "update",
+            resourceType: "seo",
+            resourceId: robots._id,
+            details: `${isNew ? "Created" : "Updated"} robots.txt file`,
+            ipAddress: getClientIP(req),
+            userAgent: getUserAgent(req),
+        });
 
         return NextResponse.json(
             {
@@ -102,6 +122,9 @@ export async function PUT(req) {
         );
     }
 }
+
+
+
 
 
 

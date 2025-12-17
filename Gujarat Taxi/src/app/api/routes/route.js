@@ -1,12 +1,20 @@
 import { NextResponse } from "next/server";
 import connectDB from "../../lib/db";
 import ROUTE from "../../models/routeModel";
+import { createAuditLog, getClientIP, getUserAgent } from "../../lib/auditLog.js";
+import { requirePermission } from "../../lib/auth.js";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export async function POST(req) {
   try {
+    // Require permission to manage routes
+    const authData = await requirePermission(req, "canManageRoutes");
+    if (authData instanceof NextResponse) {
+      return authData; // Return error response
+    }
+
     await connectDB();
     const payload = await req.json();
     const { name, from, to, url, blogId } = payload || {};
@@ -32,6 +40,17 @@ export async function POST(req) {
       to,
       url,
       blogId: blogId || null,
+    });
+
+    // Create audit log
+    await createAuditLog({
+      userId: authData.admin._id,
+      action: "create",
+      resourceType: "route",
+      resourceId: route._id,
+      details: `Created route: ${route.name} (${route.from} to ${route.to})`,
+      ipAddress: getClientIP(req),
+      userAgent: getUserAgent(req),
     });
 
     return NextResponse.json(

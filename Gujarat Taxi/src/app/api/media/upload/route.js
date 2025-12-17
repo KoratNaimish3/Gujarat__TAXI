@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import connectDB from "../../../lib/db";
 import Media from "../../../models/media";
 import cloudinary from "../../../lib/cloudinary";
+import { createAuditLog, getClientIP, getUserAgent } from "../../../lib/auditLog.js";
+import { requirePermission } from "../../../lib/auth.js";
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
@@ -10,6 +12,12 @@ export const revalidate = 0;
 // POST /api/media/upload - Upload media file
 export async function POST(req) {
     try {
+        // Require permission to manage media
+        const authData = await requirePermission(req, "canManageMedia");
+        if (authData instanceof NextResponse) {
+            return authData; // Return error response
+        }
+
         await connectDB();
 
         const formData = await req.formData();
@@ -102,6 +110,17 @@ export async function POST(req) {
         });
 
         console.log("Media saved to database:", media._id, media.filePath); // Debug log
+
+        // Create audit log
+        await createAuditLog({
+            userId: authData.admin._id,
+            action: "create",
+            resourceType: "media",
+            resourceId: media._id,
+            details: `Uploaded media: ${file.name || 'media file'} (${(file.size / 1024).toFixed(2)} KB)`,
+            ipAddress: getClientIP(req),
+            userAgent: getUserAgent(req),
+        });
 
         // Convert Mongoose document to plain object for proper serialization
         const mediaObject = media.toObject ? media.toObject() : media;

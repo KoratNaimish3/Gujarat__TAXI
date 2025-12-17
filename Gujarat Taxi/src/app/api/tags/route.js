@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import connectDB from "../../lib/db";
 import Tag from "../../models/tag";
+import { createAuditLog, getClientIP, getUserAgent } from "../../lib/auditLog.js";
+import { requirePermission } from "../../lib/auth.js";
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
@@ -41,6 +43,12 @@ export async function GET() {
 // POST /api/tags - Create new tag
 export async function POST(req) {
     try {
+        // Require permission to manage tags
+        const authData = await requirePermission(req, "canManageTags");
+        if (authData instanceof NextResponse) {
+            return authData; // Return error response
+        }
+
         await connectDB();
 
         const body = await req.json();
@@ -77,6 +85,17 @@ export async function POST(req) {
             seoDescription: seoDescription || "",
         });
 
+        // Create audit log
+        await createAuditLog({
+            userId: authData.admin._id,
+            action: "create",
+            resourceType: "tag",
+            resourceId: tag._id,
+            details: `Created tag: ${tag.name}`,
+            ipAddress: getClientIP(req),
+            userAgent: getUserAgent(req),
+        });
+
         return NextResponse.json(
             {
                 success: true,
@@ -103,6 +122,9 @@ export async function POST(req) {
         );
     }
 }
+
+
+
 
 
 

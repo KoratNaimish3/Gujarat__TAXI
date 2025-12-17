@@ -1,14 +1,21 @@
 import { NextResponse } from "next/server";
 import connectDB from "../../lib/db";
 import AuditLog from "../../models/auditLog";
+import { requirePermission } from "../../lib/auth.js";
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-// GET /api/audit-logs - Get audit logs with filters
 export async function GET(req) {
     try {
+        // Check permission
+        const authData = await requirePermission(req, "canViewAuditLogs");
+        
+        if (authData instanceof NextResponse) {
+            return authData; // Return error response
+        }
+
         await connectDB();
 
         const { searchParams } = new URL(req.url);
@@ -47,10 +54,16 @@ export async function GET(req) {
         const skip = (page - 1) * limit;
 
         const logs = await AuditLog.find(query)
-            .populate('userId', 'userName email')
+            .populate({
+                path: 'userId',
+                select: 'userName email',
+                model: 'Admin',
+                options: { lean: true }
+            })
             .sort({ createdAt: -1 })
             .skip(skip)
-            .limit(limit);
+            .limit(limit)
+            .lean();
 
         const total = await AuditLog.countDocuments(query);
 
@@ -84,9 +97,4 @@ export async function GET(req) {
         );
     }
 }
-
-
-
-
-
 

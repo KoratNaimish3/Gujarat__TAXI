@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import connectDB from "../../../../../lib/db";
-import BlogRevision from "../../../../../models/blogRevision";
-import BLOG from "../../../../../models/blog";
+import connectDB from "@/app/lib/db";
+import BlogRevision from "@/app/models/blogRevision";
+import BLOG from "@/app/models/blog";
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';

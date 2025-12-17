@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import connectDB from "../../lib/db";
 import Redirect from "../../models/redirect";
+import { createAuditLog, getClientIP, getUserAgent } from "../../lib/auditLog.js";
+import { requirePermission } from "../../lib/auth.js";
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
@@ -43,6 +45,12 @@ export async function GET() {
 // POST /api/redirects - Create new redirect
 export async function POST(req) {
     try {
+        // Require permission to manage SEO (redirects are part of SEO)
+        const authData = await requirePermission(req, "canManageSEO");
+        if (authData instanceof NextResponse) {
+            return authData; // Return error response
+        }
+
         await connectDB();
 
         const body = await req.json();
@@ -97,6 +105,17 @@ export async function POST(req) {
             notes: notes || "",
         });
 
+        // Create audit log
+        await createAuditLog({
+            userId: authData.admin._id,
+            action: "create",
+            resourceType: "redirect",
+            resourceId: redirect._id,
+            details: `Created redirect: ${normalizedFrom} → ${normalizedTo} (${type || 301})`,
+            ipAddress: getClientIP(req),
+            userAgent: getUserAgent(req),
+        });
+
         return NextResponse.json(
             {
                 success: true,
@@ -123,6 +142,9 @@ export async function POST(req) {
         );
     }
 }
+
+
+
 
 
 

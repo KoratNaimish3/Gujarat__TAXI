@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import connectDB from "../../lib/db";
 import Category from "../../models/category";
+import { createAuditLog, getClientIP, getUserAgent } from "../../lib/auditLog.js";
+import { requirePermission } from "../../lib/auth.js";
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
@@ -43,6 +45,12 @@ export async function GET() {
 // POST /api/categories - Create new category
 export async function POST(req) {
     try {
+        // Require permission to manage categories
+        const authData = await requirePermission(req, "canManageCategories");
+        if (authData instanceof NextResponse) {
+            return authData; // Return error response
+        }
+
         await connectDB();
 
         const body = await req.json();
@@ -81,6 +89,17 @@ export async function POST(req) {
             image: image || "",
         });
 
+        // Create audit log
+        await createAuditLog({
+            userId: authData.admin._id,
+            action: "create",
+            resourceType: "category",
+            resourceId: category._id,
+            details: `Created category: ${category.name}`,
+            ipAddress: getClientIP(req),
+            userAgent: getUserAgent(req),
+        });
+
         return NextResponse.json(
             {
                 success: true,
@@ -101,6 +120,9 @@ export async function POST(req) {
         );
     }
 }
+
+
+
 
 
 
