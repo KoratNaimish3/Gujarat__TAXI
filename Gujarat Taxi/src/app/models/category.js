@@ -38,8 +38,7 @@ const categorySchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-// Create unique index on slug
-categorySchema.index({ slug: 1 }, { unique: true });
+// Index for slug is automatically created by unique: true in field definition
 // Index for parent lookup
 categorySchema.index({ parentId: 1 });
 
@@ -48,6 +47,13 @@ const Category =
     mongoose.model("Category", categorySchema);
 
 export default Category;
+
+
+
+
+
+
+
 
 
 

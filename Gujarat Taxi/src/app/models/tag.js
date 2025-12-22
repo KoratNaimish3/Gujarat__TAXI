@@ -31,12 +31,18 @@ const tagSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-// Create unique index on slug
-tagSchema.index({ slug: 1 }, { unique: true });
+// Index is automatically created by unique: true in field definition
 
 const Tag = mongoose.models.Tag || mongoose.model("Tag", tagSchema);
 
 export default Tag;
+
+
+
+
+
+
+
 
 
 

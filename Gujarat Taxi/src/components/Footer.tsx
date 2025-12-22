@@ -335,7 +335,7 @@ export default function Footer() {
     if (!url) return "#";
     if (url.startsWith("http")) return url;
     if (url.startsWith("/")) return url;
-    return `/blogs/${url}`;
+    return `/route/${url}`;
   };
 
   return (

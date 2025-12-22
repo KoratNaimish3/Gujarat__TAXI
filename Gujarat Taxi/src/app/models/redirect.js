@@ -34,16 +34,21 @@ const redirectSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-// Create index for fast lookup
-redirectSchema.index({ fromPath: 1 });
-redirectSchema.index({ active: 1 });
-
-// Prevent duplicate fromPath
+// Create unique index for fromPath (prevents duplicates and enables fast lookup)
 redirectSchema.index({ fromPath: 1 }, { unique: true });
+// Index for active status lookup
+redirectSchema.index({ active: 1 });
 
 const Redirect = mongoose.models.Redirect || mongoose.model("Redirect", redirectSchema);
 
 export default Redirect;
+
+
+
+
+
+
+
 
 
 

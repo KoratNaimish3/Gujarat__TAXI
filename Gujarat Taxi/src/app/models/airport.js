@@ -32,7 +32,7 @@ const airportSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-airportSchema.index({ url: 1 }, { unique: true });
+// Index is automatically created by unique: true in field definition
 
 const AIRPORT = mongoose.models.Airport || mongoose.model("Airport", airportSchema);
 

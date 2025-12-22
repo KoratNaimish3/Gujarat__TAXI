@@ -80,7 +80,7 @@ export default function AirportsPage() {
                   <td className="px-4 py-3 text-gray-700">{airport.to}</td>
                   <td className="px-4 py-3">
                     <Link
-                      href={airport.url || "#"}
+                      href={airport.url ? `/airport/${airport.url}` : "#"}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-blue-600 hover:text-blue-800 hover:underline break-all"

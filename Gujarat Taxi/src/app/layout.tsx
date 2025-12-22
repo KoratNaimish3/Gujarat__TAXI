@@ -27,7 +27,6 @@ export const metadata: Metadata = {
   icons: {
     icon: "/favicon.ico",
   },
-  themeColor: "#ffffff", // Force light theme color
   other: {
     "color-scheme": "light",
   },
@@ -43,6 +42,7 @@ export const metadata: Metadata = {
 export const viewport = {
   width: "device-width",
   initialScale: 1,
+  themeColor: "#ffffff", // Force light theme color
 };
 
 export default function RootLayout({

@@ -76,7 +76,7 @@ export default function CitiesPage() {
                   <td className="px-4 py-3 font-medium text-gray-800">{city.name}</td>
                   <td className="px-4 py-3">
                     <Link
-                      href={city.url || "#"}
+                      href={city.url ? `/city/${city.url}` : "#"}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-blue-600 hover:text-blue-800 hover:underline break-all"

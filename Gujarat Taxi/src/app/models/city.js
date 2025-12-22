@@ -22,7 +22,7 @@ const citySchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-citySchema.index({ url: 1 }, { unique: true });
+// Index is automatically created by unique: true in field definition
 
 const CITY = mongoose.models.City || mongoose.model("City", citySchema);
 

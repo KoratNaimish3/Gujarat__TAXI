@@ -80,7 +80,7 @@ export default function RoutesPage() {
                   <td className="px-4 py-3 text-gray-700">{route.to}</td>
                   <td className="px-4 py-3">
                     <Link
-                      href={route.url || "#"}
+                      href={route.url ? `/route/${route.url}` : "#"}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-blue-600 hover:text-blue-800 hover:underline break-all"

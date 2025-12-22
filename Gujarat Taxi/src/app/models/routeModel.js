@@ -32,7 +32,7 @@ const routeSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-routeSchema.index({ url: 1 }, { unique: true });
+// Index is automatically created by unique: true in field definition
 
 const ROUTE = mongoose.models.Route || mongoose.model("Route", routeSchema);
 
