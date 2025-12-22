@@ -10,7 +10,7 @@ function buildHref(url = "") {
   if (!url) return "#";
   if (url.startsWith("http")) return url;
   if (url.startsWith("/")) return url;
-  return `/route/${url}`;
+  return `/${url}`; // Direct slug access for route blogs
 }
 
 export default function RoutesDirectoryPage() {
@@ -145,7 +145,7 @@ export default function RoutesDirectoryPage() {
             <div className="flex flex-wrap items-center gap-4">
               <div className="flex items-center gap-2 text-gray-700 font-semibold">
                 <div className="p-2 bg-orange-100 rounded-lg">
-                  <Filter className="w-5 h-5 text-orange-600" />
+                <Filter className="w-5 h-5 text-orange-600" />
                 </div>
                 <span>Filter by Origin:</span>
               </div>

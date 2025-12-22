@@ -22,11 +22,40 @@ export async function GET(req, { params }) {
             return NextResponse.json({ success: false, message: "Blog ID is required" }, { status: 400 });
         }
 
-        const blog = await BLOG.findById(id)
-            .populate('categories', 'name slug')
-            .populate('tags', 'name slug')
-            .populate('authorId', 'userName email')
-            .lean();
+        let blog;
+        try {
+            // Try to populate, but handle errors gracefully
+            blog = await BLOG.findById(id)
+                .populate({
+                    path: 'categories',
+                    select: 'name slug',
+                    strictPopulate: false
+                })
+                .populate({
+                    path: 'tags',
+                    select: 'name slug',
+                    strictPopulate: false
+                })
+                .populate({
+                    path: 'authorId',
+                    select: 'userName email',
+                    strictPopulate: false
+                })
+                .lean();
+        } catch (populateError) {
+            console.error("Error populating blog:", populateError);
+            // If populate fails, try without populate
+            try {
+                blog = await BLOG.findById(id).lean();
+            } catch (findError) {
+                console.error("Error finding blog:", findError);
+                return NextResponse.json({ 
+                    success: false, 
+                    message: "Error fetching blog",
+                    error: findError.message 
+                }, { status: 500 });
+            }
+        }
 
         if (!blog) {
             console.log("Blog not found for ID:", id);
@@ -35,40 +64,126 @@ export async function GET(req, { params }) {
 
         console.log("Blog found:", blog.title);
 
-        // Helper function to safely convert to string
-        const safeToString = (value) => {
-            if (!value) return null;
-            if (typeof value === 'string') return value;
-            if (value.toString) return value.toString();
-            return String(value);
-        };
-
         // Convert to plain object and ensure proper serialization
+        // Filter out null/undefined populated fields
+        const safeCategories = Array.isArray(blog.categories) 
+            ? blog.categories
+                .filter(cat => {
+                    // Handle both populated objects and ObjectIds
+                    if (!cat) return false;
+                    if (typeof cat === 'object' && cat._id) {
+                        return cat._id && typeof cat._id !== 'undefined' && cat._id !== null;
+                    }
+                    // If it's just an ObjectId string, include it
+                    return typeof cat === 'string' || (cat && cat.toString);
+                })
+                .map(cat => {
+                    // If it's already an ObjectId string, return minimal object
+                    if (typeof cat === 'string') {
+                        return { _id: cat, name: '', slug: '' };
+                    }
+                    // If it's a populated object
+                    if (cat && cat._id) {
+                        return {
+                            _id: cat._id.toString(),
+                            name: cat.name || '',
+                            slug: cat.slug || ''
+                        };
+                    }
+                    // Fallback
+                    return { _id: cat.toString(), name: '', slug: '' };
+                })
+            : [];
+        
+        const safeTags = Array.isArray(blog.tags)
+            ? blog.tags
+                .filter(tag => {
+                    // Handle both populated objects and ObjectIds
+                    if (!tag) return false;
+                    if (typeof tag === 'object' && tag._id) {
+                        return tag._id && typeof tag._id !== 'undefined' && tag._id !== null;
+                    }
+                    // If it's just an ObjectId string, include it
+                    return typeof tag === 'string' || (tag && tag.toString);
+                })
+                .map(tag => {
+                    // If it's already an ObjectId string, return minimal object
+                    if (typeof tag === 'string') {
+                        return { _id: tag, name: '', slug: '' };
+                    }
+                    // If it's a populated object
+                    if (tag && tag._id) {
+                        return {
+                            _id: tag._id.toString(),
+                            name: tag.name || '',
+                            slug: tag.slug || ''
+                        };
+                    }
+                    // Fallback
+                    return { _id: tag.toString(), name: '', slug: '' };
+                })
+            : [];
+
+        // Safely handle authorId
+        let safeAuthorId = null;
+        if (blog.authorId && blog.authorId._id) {
+            try {
+                safeAuthorId = {
+                    _id: blog.authorId._id.toString(),
+                    userName: blog.authorId.userName || '',
+                    email: blog.authorId.email || ''
+                };
+            } catch (e) {
+                console.error("Error processing authorId:", e);
+            }
+        }
+
+        // Build blogData safely, avoiding circular references and Mongoose internals
         const blogData = {
-            ...blog,
             _id: blog._id ? blog._id.toString() : id,
-            categories: Array.isArray(blog.categories) && blog.categories.length > 0
-                ? blog.categories
-                    .filter(cat => cat && cat._id)
-                    .map(cat => ({
-                        _id: cat._id.toString(),
-                        name: cat.name || '',
-                        slug: cat.slug || ''
-                    }))
-                : [],
-            tags: Array.isArray(blog.tags) && blog.tags.length > 0
-                ? blog.tags
-                    .filter(tag => tag && tag._id)
-                    .map(tag => ({
-                        _id: tag._id.toString(),
-                        name: tag.name || '',
-                        slug: tag.slug || ''
-                    }))
-                : [],
+            title: blog.title || '',
+            slug: blog.slug || '',
+            description: blog.description || '',
+            image: blog.image || null,
+            img_publicId: blog.img_publicId || null,
+            metaTitle: blog.metaTitle || '',
+            metaDescription: blog.metaDescription || '',
+            metaKeywords: Array.isArray(blog.metaKeywords) ? blog.metaKeywords : [],
+            extra_metatag: blog.extra_metatag || '',
+            faqs: Array.isArray(blog.faqs) ? blog.faqs : [],
+            categories: safeCategories,
+            tags: safeTags,
+            authorId: safeAuthorId,
+            status: blog.status || 'draft',
+            featuredImageAlt: blog.featuredImageAlt || '',
+            canonicalUrl: blog.canonicalUrl || null,
             createdAt: blog.createdAt ? new Date(blog.createdAt).toISOString() : null,
             updatedAt: blog.updatedAt ? new Date(blog.updatedAt).toISOString() : null,
             scheduledAt: blog.scheduledAt ? new Date(blog.scheduledAt).toISOString() : null,
         };
+
+        // Test serialization before sending
+        try {
+            JSON.stringify(blogData);
+        } catch (serializeError) {
+            console.error("Serialization error:", serializeError);
+            // Remove any problematic fields
+            const cleanBlogData = {
+                ...blogData,
+                description: typeof blogData.description === 'string' ? blogData.description : '',
+            };
+            return NextResponse.json(
+                { blog: cleanBlogData, success: true }, 
+                { 
+                    status: 200,
+                    headers: {
+                        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+                        'Pragma': 'no-cache',
+                        'Expires': '0',
+                    }
+                }
+            );
+        }
 
         return NextResponse.json(
             { blog: blogData, success: true }, 
@@ -83,11 +198,20 @@ export async function GET(req, { params }) {
         );
     } catch (error) {
         console.error("Get blog error:", error);
+        console.error("Error name:", error.name);
+        console.error("Error message:", error.message);
         console.error("Error stack:", error.stack);
+        
+        // Return more detailed error in development
+        const errorMessage = process.env.NODE_ENV === 'development' 
+            ? error.message 
+            : "Internal Server Error";
+            
         return NextResponse.json({ 
             message: "Internal Server Error", 
-            error: error.message, 
-            success: false 
+            error: errorMessage, 
+            success: false,
+            details: process.env.NODE_ENV === 'development' ? error.stack : undefined
         }, { status: 500 });
     }
 }
@@ -181,7 +305,6 @@ export async function PUT(req, { params }) {
             tags = blog.tags || [];
         }
         const scheduledAt = formData.get("scheduledAt");
-        const canonicalUrl = formData.get("canonicalUrl");
         const featuredImageAlt = formData.get("featuredImageAlt");
         const imageFile = formData.get("image");
 
@@ -255,10 +378,6 @@ export async function PUT(req, { params }) {
             }
         } else if (scheduledAt === "") {
             updateData.scheduledAt = null;
-        }
-
-        if (canonicalUrl !== null) {
-            updateData.canonicalUrl = canonicalUrl || null;
         }
 
         if (featuredImageAlt !== null) {

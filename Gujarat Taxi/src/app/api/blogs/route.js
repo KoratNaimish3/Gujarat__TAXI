@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import connectDB from "../../lib/db";
 import BLOG from "../../models/blog";
+import ROUTE from "../../models/routeModel";
+import CITY from "../../models/city";
+import AIRPORT from "../../models/airport";
 import cloudinary from "../../lib/cloudinary";
 import { createAuditLog, getClientIP, getUserAgent } from "../../lib/auditLog.js";
 import { requirePermission } from "../../lib/auth.js";
@@ -176,10 +179,33 @@ export async function GET(req) {
 
         const blogs = await BLOG.find(query).sort({ createdAt: -1 }).lean();
         
-        // Convert to plain objects
-        const blogsData = blogs.map(blog => ({
+        // Check if blogs are linked to routes/cities/airports and determine URL
+        const blogsData = await Promise.all(blogs.map(async (blog) => {
+            // Check if blog is linked to route/city/airport
+            const route = await ROUTE.findOne({ blogId: blog._id }).lean();
+            const city = await CITY.findOne({ blogId: blog._id }).lean();
+            const airport = await AIRPORT.findOne({ blogId: blog._id }).lean();
+            
+            let blogUrl = `/blog/${blog.slug}`; // Default for regular blogs
+            let isLinked = false;
+            
+            if (route) {
+                blogUrl = `/${route.url}`; // Direct slug for route blogs
+                isLinked = true;
+            } else if (city) {
+                blogUrl = `/${city.url}`; // Direct slug for city blogs
+                isLinked = true;
+            } else if (airport) {
+                blogUrl = `/${airport.url}`; // Direct slug for airport blogs
+                isLinked = true;
+            }
+            
+            return {
             ...blog,
             _id: blog._id.toString(),
+                blogUrl,
+                isLinked,
+            };
         }));
 
         // Get counts for admin dashboard

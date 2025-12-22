@@ -275,11 +275,11 @@ export default function CityPage() {
                         >
                           <span className="font-semibold text-gray-900 pr-4 group-hover/faq:text-orange-700 transition-colors">{faq.question}</span>
                           <div className="p-1.5 bg-orange-100 rounded-lg group-hover/faq:bg-orange-200 transition-colors">
-                            {openFAQIndex === index ? (
-                              <ChevronUp className="w-5 h-5 text-orange-600 flex-shrink-0" />
-                            ) : (
-                              <ChevronDown className="w-5 h-5 text-orange-600 flex-shrink-0" />
-                            )}
+                          {openFAQIndex === index ? (
+                            <ChevronUp className="w-5 h-5 text-orange-600 flex-shrink-0" />
+                          ) : (
+                            <ChevronDown className="w-5 h-5 text-orange-600 flex-shrink-0" />
+                          )}
                           </div>
                         </button>
                         {openFAQIndex === index && (

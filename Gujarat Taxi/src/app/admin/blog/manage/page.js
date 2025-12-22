@@ -211,13 +211,13 @@ export default function AllBlogsPage() {
 
                                     <td className="px-2 md:px-4 py-2 md:py-3">
                                         <Link
-                                            href={`/blogs/${blog.slug}`}
+                                            href={blog.blogUrl || `/blog/${blog.slug}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="text-blue-600 hover:text-blue-800 hover:underline text-xs font-medium break-all"
                                             title="Open blog in new tab"
                                         >
-                                            /blogs/{blog.slug}
+                                            {blog.slug}
                                         </Link>
                                     </td>
 

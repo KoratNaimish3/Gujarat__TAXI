@@ -100,7 +100,7 @@ export default function CanonicalPage() {
                                             {duplicate.title}
                                         </h3>
                                         <div className="flex items-center gap-4 text-sm text-gray-600">
-                                            <span>Slug: /blogs/{duplicate.slug}</span>
+                                            <span>Slug: {duplicate.slug}</span>
                                             {duplicate.canonicalUrl && (
                                                 <span className="text-blue-600">
                                                     Canonical: {duplicate.canonicalUrl}
@@ -133,7 +133,7 @@ export default function CanonicalPage() {
                                                         {similar.title}
                                                     </h5>
                                                     <p className="text-xs text-gray-600 mt-1">
-                                                        /blogs/{similar.slug}
+                                                        {similar.slug}
                                                     </p>
                                                 </div>
                                                 <div className="flex items-center gap-2">

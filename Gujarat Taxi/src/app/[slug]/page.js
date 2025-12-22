@@ -3,47 +3,99 @@
 import Header_Components from "@/components/common_components/Header_components";
 import Footer_Components from "@/components/common_components/Footer_components";
 import { useState, useEffect, useRef } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, ChevronDown, ChevronUp, Plane } from "lucide-react";
+import { ArrowLeft, ChevronDown, ChevronUp } from "lucide-react";
 
-export default function AirportPage() {
+export default function SlugPage() {
   const params = useParams();
+  const router = useRouter();
   const slug = params?.slug;
-  const [airport, setAirport] = useState(null);
+  const [content, setContent] = useState(null);
+  const [contentType, setContentType] = useState(null); // 'route', 'city', 'airport', or 'blog'
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [openFAQIndex, setOpenFAQIndex] = useState(null);
   const contentRef = useRef(null);
 
   useEffect(() => {
-    const fetchAirport = async () => {
+    const fetchContent = async () => {
       if (!slug) return;
 
       try {
         setLoading(true);
-        const res = await fetch(`/api/airports/slug/${slug}`);
-        const data = await res.json();
-
-        if (data.success && data.airport) {
-          setAirport(data.airport);
-        } else {
-          setError("Airport not found");
+        
+        // First, try to find in routes
+        try {
+          const routeRes = await fetch(`/api/routes/slug/${slug}`);
+          const routeData = await routeRes.json();
+          if (routeData.success && routeData.route) {
+            setContent(routeData.route);
+            setContentType('route');
+            setLoading(false);
+            return;
+          }
+        } catch (e) {
+          // Continue to next check
         }
+
+        // Try to find in cities
+        try {
+          const cityRes = await fetch(`/api/cities/slug/${slug}`);
+          const cityData = await cityRes.json();
+          if (cityData.success && cityData.city) {
+            setContent(cityData.city);
+            setContentType('city');
+            setLoading(false);
+            return;
+          }
+        } catch (e) {
+          // Continue to next check
+        }
+
+        // Try to find in airports
+        try {
+          const airportRes = await fetch(`/api/airports/slug/${slug}`);
+          const airportData = await airportRes.json();
+          if (airportData.success && airportData.airport) {
+            setContent(airportData.airport);
+            setContentType('airport');
+            setLoading(false);
+            return;
+          }
+        } catch (e) {
+          // Continue to next check
+        }
+
+        // If not found in routes/cities/airports, check if it's a blog
+        try {
+          const blogRes = await fetch(`/api/blogs/slug/${slug}`);
+          const blogData = await blogRes.json();
+          if (blogData.success && blogData.blog) {
+            // It's a blog, redirect to /blog/slug
+            router.push(`/blog/${slug}`);
+            return;
+          }
+        } catch (e) {
+          // Not a blog either
+        }
+        
+        // Not found anywhere
+        setError("Content not found");
+        setLoading(false);
       } catch (err) {
-        console.error("Error fetching airport:", err);
-        setError("Failed to load airport");
-      } finally {
+        console.error("Error fetching content:", err);
+        setError("Failed to load content");
         setLoading(false);
       }
     };
 
-    fetchAirport();
-  }, [slug]);
+    fetchContent();
+  }, [slug, router]);
 
   // Wrap tables in scrollable containers for mobile
   useEffect(() => {
-    if (!contentRef.current || !airport?.blog) return;
+    if (!contentRef.current || !content?.blog) return;
 
     const wrapTables = () => {
       const contentDiv = contentRef.current;
@@ -113,7 +165,7 @@ export default function AirportPage() {
       clearTimeout(timeoutId2);
       observer.disconnect();
     };
-  }, [airport]);
+  }, [content]);
 
   if (loading) {
     return (
@@ -122,7 +174,7 @@ export default function AirportPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="text-center">
             <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-orange-200 border-t-orange-600 mb-4"></div>
-            <p className="text-gray-600 font-medium text-lg">Loading airport...</p>
+            <p className="text-gray-600 font-medium text-lg">Loading...</p>
           </div>
         </div>
         <Footer_Components />
@@ -130,23 +182,20 @@ export default function AirportPage() {
     );
   }
 
-  if (error || !airport) {
+  if (error || !content) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-50">
         <Header_Components />
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="text-center">
-            <div className="w-20 h-20 bg-gradient-to-r from-orange-400 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
-              <Plane className="w-10 h-10 text-white" />
-            </div>
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">Airport Not Found</h1>
-            <p className="text-gray-600 mb-6 text-lg">{error || "The airport you're looking for doesn't exist."}</p>
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">Content Not Found</h1>
+            <p className="text-gray-600 mb-6">{error || "The content you're looking for doesn't exist."}</p>
             <Link
-              href="/airports"
+              href="/"
               className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-xl font-semibold transition-all shadow-md hover:shadow-lg transform hover:scale-105"
             >
               <ArrowLeft size={18} />
-              Back to Airports
+              Back to Home
             </Link>
           </div>
         </div>
@@ -155,7 +204,9 @@ export default function AirportPage() {
     );
   }
 
-  const blog = airport.blog;
+  const blog = content.blog;
+  const backLink = contentType === 'route' ? '/routes' : contentType === 'city' ? '/cities' : '/airports';
+  const backText = contentType === 'route' ? 'Back to Routes' : contentType === 'city' ? 'Back to Cities' : 'Back to Airports';
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-50 overflow-x-hidden">
@@ -164,27 +215,31 @@ export default function AirportPage() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 overflow-x-hidden">
         {/* Back Button */}
         <Link
-          href="/airports"
+          href={backLink}
           className="inline-flex items-center gap-2 text-gray-700 hover:text-orange-600 mb-8 transition-colors font-semibold group"
         >
           <div className="p-2 bg-orange-100 rounded-lg group-hover:bg-orange-200 transition-colors">
             <ArrowLeft size={18} className="text-orange-600" />
           </div>
-          <span>Back to Airports</span>
+          <span>{backText}</span>
         </Link>
 
-        {/* Airport Info */}
+        {/* Content Info */}
         <div className="bg-gradient-to-r from-white to-orange-50 rounded-2xl shadow-xl p-6 md:p-8 mb-8 border-2 border-orange-100 relative overflow-hidden">
           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-orange-500 to-orange-600"></div>
-          <div className="flex items-center gap-4 mb-3">
-            <div className="p-4 bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl shadow-lg">
-              <Plane className="w-8 h-8 text-white" />
-            </div>
-            <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-orange-600 to-orange-500 bg-clip-text text-transparent">{airport.name}</h1>
-          </div>
-          <p className="text-lg text-gray-700 font-medium ml-20">
-            {airport.from} → {airport.to}
-          </p>
+          <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-orange-600 to-orange-500 bg-clip-text text-transparent mb-3">
+            {content.name}
+          </h1>
+          {contentType === 'route' && (
+            <p className="text-lg text-gray-700 font-medium">
+              {content.from} → {content.to}
+            </p>
+          )}
+          {contentType === 'airport' && (
+            <p className="text-lg text-gray-700 font-medium">
+              {content.from} → {content.to}
+            </p>
+          )}
         </div>
 
         {/* Blog Content */}
@@ -278,11 +333,11 @@ export default function AirportPage() {
                         >
                           <span className="font-semibold text-gray-900 pr-4 group-hover/faq:text-orange-700 transition-colors">{faq.question}</span>
                           <div className="p-1.5 bg-orange-100 rounded-lg group-hover/faq:bg-orange-200 transition-colors">
-                          {openFAQIndex === index ? (
-                            <ChevronUp className="w-5 h-5 text-orange-600 flex-shrink-0" />
-                          ) : (
-                            <ChevronDown className="w-5 h-5 text-orange-600 flex-shrink-0" />
-                          )}
+                            {openFAQIndex === index ? (
+                              <ChevronUp className="w-5 h-5 text-orange-600 flex-shrink-0" />
+                            ) : (
+                              <ChevronDown className="w-5 h-5 text-orange-600 flex-shrink-0" />
+                            )}
                           </div>
                         </button>
                         {openFAQIndex === index && (
@@ -299,10 +354,7 @@ export default function AirportPage() {
           </article>
         ) : (
           <div className="bg-gradient-to-r from-white to-orange-50 rounded-2xl shadow-xl p-8 text-center border-2 border-orange-100">
-            <div className="w-16 h-16 bg-gradient-to-r from-orange-400 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-              <Plane className="w-8 h-8 text-white" />
-            </div>
-            <p className="text-gray-600 font-medium text-lg">No blog content available for this airport.</p>
+            <p className="text-gray-600 font-medium text-lg">No blog content available.</p>
           </div>
         )}
       </div>
@@ -311,6 +363,4 @@ export default function AirportPage() {
     </div>
   );
 }
-
-
 

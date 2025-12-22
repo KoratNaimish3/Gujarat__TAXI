@@ -163,7 +163,6 @@ export default function AuditLogsPage() {
                             <option value="category">Category</option>
                             <option value="tag">Tag</option>
                             <option value="media">Media</option>
-                            <option value="redirect">Redirect</option>
                             <option value="user">User</option>
                             <option value="system">System</option>
                         </select>

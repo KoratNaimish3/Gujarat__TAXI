@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LogOut, LayoutDashboard, FilePlus2, FileText, Settings, Tag, FolderTree, Map, FileCode, Repeat, Link2, Activity, Shield, Building2, Plane, Users, User, Mail } from "lucide-react";
+import { LogOut, LayoutDashboard, FilePlus2, FileText, Settings, Tag, FolderTree, Map, FileCode, Activity, Shield, Building2, Plane, Users, User, Mail } from "lucide-react";
 
 export default function AdminLayout({ children }) {
   const pathname = usePathname();
@@ -39,8 +39,6 @@ export default function AdminLayout({ children }) {
     { name: "Roles", href: "/admin/roles", icon: Shield, permission: "canAssignRole" },
     { name: "Sitemap", href: "/admin/seo/sitemap", icon: Map, permission: "canManageSEO" },
     { name: "Robots.txt", href: "/admin/seo/robots", icon: FileCode, permission: "canManageSEO" },
-    { name: "Redirects", href: "/admin/seo/redirects", icon: Repeat, permission: "canManageSEO" },
-    { name: "Canonical URLs", href: "/admin/seo/canonical", icon: Link2, permission: "canManageSEO" },
   ];
 
   // Filter navigation items based on permissions

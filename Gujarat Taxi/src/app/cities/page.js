@@ -10,7 +10,7 @@ function buildHref(url = "") {
   if (!url) return "#";
   if (url.startsWith("http")) return url;
   if (url.startsWith("/")) return url;
-  return `/city/${url}`;
+  return `/${url}`; // Direct slug access for city blogs
 }
 
 export default function CitiesPage() {
@@ -89,31 +89,31 @@ export default function CitiesPage() {
         {/* Search Section */}
         <div className="bg-gradient-to-r from-white to-orange-50 rounded-2xl shadow-xl p-6 md:p-8 mb-8 border-2 border-orange-100">
           <div className="space-y-5">
-            <div className="relative">
+          <div className="relative">
               <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
                 <Search className="text-orange-500 w-5 h-5" />
               </div>
-              <input
-                type="text"
-                placeholder="Search cities by name..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+            <input
+              type="text"
+              placeholder="Search cities by name..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-12 pr-12 py-4 bg-white border-2 border-orange-200 rounded-xl focus:border-orange-500 focus:ring-4 focus:ring-orange-200 outline-none transition-all text-gray-900 placeholder-gray-400 shadow-sm"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery("")}
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
                   className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-orange-600 transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              )}
-            </div>
+              >
+                <X className="w-5 h-5" />
+              </button>
+            )}
+          </div>
             <div className="pt-3 border-t-2 border-orange-100">
               <p className="text-sm text-gray-700 font-medium">
                 Showing <span className="font-bold text-orange-600 text-base">{filteredCities.length}</span> of{" "}
                 <span className="font-bold text-gray-900 text-base">{cities.length}</span> cities
-              </p>
+            </p>
             </div>
           </div>
         </div>

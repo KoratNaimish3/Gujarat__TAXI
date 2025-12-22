@@ -7,6 +7,7 @@ import dynamic from "next/dynamic";
 // Dynamically import both CKEditor and ClassicEditor together with SSR disabled
 const CKEditorWrapper = dynamic(
   async () => {
+    try {
     const { CKEditor } = await import("@ckeditor/ckeditor5-react");
     const ClassicEditor = (await import("@ckeditor/ckeditor5-build-classic"))
       .default;
@@ -14,6 +15,17 @@ const CKEditorWrapper = dynamic(
     return function EditorComponent(props) {
       return <CKEditor editor={ClassicEditor} {...props} />;
     };
+    } catch (error) {
+      console.error("Error loading CKEditor:", error);
+      // Return a fallback component
+      return function EditorComponent(props) {
+        return (
+          <div className="h-64 border rounded-md p-4 bg-red-50 flex items-center justify-center">
+            <p className="text-red-600">Error loading editor. Please refresh the page.</p>
+          </div>
+        );
+      };
+    }
   },
   {
     ssr: false,
@@ -40,7 +52,6 @@ export default function AddBlogPage() {
     categories: [],
     tags: [],
     scheduledAt: "",
-    canonicalUrl: "",
     featuredImageAlt: "",
     status: "draft",
   });
@@ -179,7 +190,6 @@ export default function AddBlogPage() {
       formData.append("tags", JSON.stringify(data.tags || []));
       formData.append("status", finalStatus);
       if (data.scheduledAt) formData.append("scheduledAt", data.scheduledAt);
-      if (data.canonicalUrl) formData.append("canonicalUrl", data.canonicalUrl);
       if (data.featuredImageAlt) formData.append("featuredImageAlt", data.featuredImageAlt);
       formData.append("image", image);
 
@@ -307,7 +317,6 @@ export default function AddBlogPage() {
           categories: [],
           tags: [],
           scheduledAt: "",
-          canonicalUrl: "",
           featuredImageAlt: "",
           status: "draft",
         });

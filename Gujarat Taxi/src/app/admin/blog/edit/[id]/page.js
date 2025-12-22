@@ -45,7 +45,6 @@ export default function EditBlogPage() {
     categories: [],
     tags: [],
     scheduledAt: "",
-    canonicalUrl: "",
     featuredImageAlt: "",
     status: "draft",
   });
@@ -101,6 +100,12 @@ export default function EditBlogPage() {
   // Fetch existing blog data
   useEffect(() => {
     const fetchBlog = async () => {
+      if (!id) {
+        toast.error("Blog ID is missing");
+        router.push("/admin/blog/manage");
+        return;
+      }
+
       try {
         console.log("Fetching blog with ID:", id);
         const res = await fetch(`/api/blogs/${id}`, {
@@ -111,62 +116,70 @@ export default function EditBlogPage() {
         });
         
         console.log("Response status:", res.status);
+        
+        if (!res.ok) {
+          const errorData = await res.json().catch(() => ({ message: "Unknown error" }));
+          console.error("API error:", errorData.message || "Unknown error");
+          toast.error(errorData.message || "Blog not found");
+          router.push("/admin/blog/manage");
+          return;
+        }
+
         const result = await res.json();
         console.log("Response data:", result);
 
-        if (!res.ok || !result.success) {
-          console.error("API error:", result.message || "Unknown error");
+        if (!result.success || !result.blog) {
+          console.error("API error:", result.message || "Blog not found");
           toast.error(result.message || "Blog not found");
           router.push("/admin/blog/manage");
           return;
         }
 
-        if (result.blog) {
-          const blog = result.blog;
-          console.log("Blog data loaded:", blog.title);
-          setData({
-            title: blog.title || "",
-            slug: blog.slug || "",
-            description: blog.description || "",
-            metaTitle: blog.metaTitle || "",
-            metaDescription: blog.metaDescription || "",
-            metaKeywords: Array.isArray(blog.metaKeywords)
-              ? blog.metaKeywords.join(", ")
-              : blog.metaKeywords || "",
-            extra_metatag: blog.extra_metatag || "",
-            faqs: Array.isArray(blog.faqs) ? blog.faqs : [],
-            categories: Array.isArray(blog.categories)
-              ? blog.categories.map(cat => typeof cat === 'object' ? cat._id : cat)
-              : [],
-            tags: Array.isArray(blog.tags)
-              ? blog.tags.map(tag => typeof tag === 'object' ? tag._id : tag)
-              : [],
-            scheduledAt: blog.scheduledAt
-              ? new Date(blog.scheduledAt).toISOString().slice(0, 16)
-              : "",
-            canonicalUrl: blog.canonicalUrl || "",
-            featuredImageAlt: blog.featuredImageAlt || "",
-            status: blog.status || "draft",
-          });
-          if (blog.image) {
-            setExistingImage(blog.image);
-          }
-        } else {
-          toast.error("Blog not found");
-          router.push("/admin/blog/manage");
+        const blog = result.blog;
+        console.log("Blog data loaded:", blog.title);
+        
+        setData({
+          title: blog.title || "",
+          slug: blog.slug || "",
+          description: blog.description || "",
+          metaTitle: blog.metaTitle || "",
+          metaDescription: blog.metaDescription || "",
+          metaKeywords: Array.isArray(blog.metaKeywords)
+            ? blog.metaKeywords.join(", ")
+            : (typeof blog.metaKeywords === 'string' ? blog.metaKeywords : ""),
+          extra_metatag: blog.extra_metatag || "",
+          faqs: Array.isArray(blog.faqs) ? blog.faqs : [],
+          categories: Array.isArray(blog.categories) && blog.categories.length > 0
+            ? blog.categories
+                .filter(cat => cat && (cat._id || typeof cat === 'string'))
+                .map(cat => typeof cat === 'object' && cat._id ? cat._id : cat)
+            : [],
+          tags: Array.isArray(blog.tags) && blog.tags.length > 0
+            ? blog.tags
+                .filter(tag => tag && (tag._id || typeof tag === 'string'))
+                .map(tag => typeof tag === 'object' && tag._id ? tag._id : tag)
+            : [],
+          scheduledAt: blog.scheduledAt
+            ? new Date(blog.scheduledAt).toISOString().slice(0, 16)
+            : "",
+          featuredImageAlt: blog.featuredImageAlt || "",
+          status: blog.status || "draft",
+        });
+        
+        if (blog.image) {
+          setExistingImage(blog.image);
         }
       } catch (error) {
         console.error("Error fetching blog:", error);
-        toast.error("Failed to load blog");
+        console.error("Error details:", error.message, error.stack);
+        toast.error(`Failed to load blog: ${error.message || "Unknown error"}`);
         router.push("/admin/blog/manage");
       } finally {
         setFetching(false);
       }
     };
 
-    if (id) {
-      fetchBlog();
-    }
+    fetchBlog();
   }, [id, router]);
 
 
@@ -240,7 +253,6 @@ export default function EditBlogPage() {
       formData.append("tags", JSON.stringify(data.tags));
       formData.append("status", data.status);
       if (data.scheduledAt) formData.append("scheduledAt", data.scheduledAt);
-      if (data.canonicalUrl) formData.append("canonicalUrl", data.canonicalUrl);
       if (data.featuredImageAlt) formData.append("featuredImageAlt", data.featuredImageAlt);
       if (image) formData.append("image", image);
 

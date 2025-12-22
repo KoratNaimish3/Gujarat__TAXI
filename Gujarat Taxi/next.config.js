@@ -14,6 +14,8 @@ const nextConfig = {
       },
     ],
   },
+  // Transpile packages that use ESM
+  transpilePackages: ['date-fns'],
   // Webpack configuration to fix module resolution issues
   webpack: (config, { isServer }) => {
     if (!isServer) {
@@ -24,6 +26,10 @@ const nextConfig = {
         tls: false,
       };
     }
+    // Fix for date-fns and other ESM modules
+    config.resolve.extensionAlias = {
+      '.js': ['.js', '.ts', '.tsx'],
+    };
     return config;
   },
   // Force dynamic rendering for admin routes
