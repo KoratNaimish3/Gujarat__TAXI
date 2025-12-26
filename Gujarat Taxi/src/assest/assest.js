@@ -16,6 +16,8 @@ import logo from  './logo.webp'
 import img1 from  './img1.webp'
 import img2 from  './img2.webp'
 import meme3 from  './meme3.webp'
+import meme2 from  './meme2.webp'
+import meme1 from  './meme1.webp'
 
 export const assest = {
     bhavnagar,
@@ -35,5 +37,8 @@ export const assest = {
     logo,
     img2,
     meme3,
-    img1
+    img1,
+    meme2,
+    meme1
+
 }

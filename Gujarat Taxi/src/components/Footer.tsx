@@ -442,11 +442,6 @@ export default function Footer() {
                 <h4 className="text-lg font-semibold text-orange-400">
                   Routes
                 </h4>
-                {loadingRoutes ? (
-                  <p className="text-gray-400 text-sm">Loading routes...</p>
-                ) : routesPreview.length === 0 ? (
-                  <p className="text-gray-400 text-sm">No routes yet.</p>
-                ) : (
                   <div className="space-y-2">
                   <p className="text-gray-300 text-sm">Ahmedabad to Rajkot</p>
                   <p className="text-gray-300 text-sm">Surat to Vadodara</p>
@@ -454,7 +449,6 @@ export default function Footer() {
                   <p className="text-gray-300 text-sm">Rajkot to Bhavnagar</p>
                   <p className="text-gray-300 text-sm">Bhavnagar to Surat</p>
                   </div>
-                )}
                 <div className="pt-3">
                   <Link
                     href="/routes"

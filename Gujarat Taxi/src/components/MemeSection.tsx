@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import anime from "animejs";
-import { Car, Fuel, Smile, TrendingUp } from "lucide-react";
+import { Car, Fuel, Smile, TrendingUp, ChevronLeft, ChevronRight } from "lucide-react";
 import { useBookingModal } from "@/contexts/BookingModalContext";
 import { assest } from "@/assest/assest";
 import Image from "next/image";
@@ -15,7 +15,7 @@ export default function MemeSection() {
 
   const memeImages = [
     { src: assest.img1, alt: "Meme 1" },
-    { src: assest.img2, alt: "Meme 2" },
+    { src: assest.meme2, alt: "Meme 2" },
     { src: assest.meme3, alt: "Meme 3" },
   ];
 
@@ -51,14 +51,15 @@ export default function MemeSection() {
       // Set immediate visibility - no delay
       containerRef.current.style.opacity = '1';
     }
+  }, []);
 
-    // Auto-rotate images every 3 seconds
-    const imageInterval = setInterval(() => {
-      setCurrentImageIndex((prev) => (prev + 1) % memeImages.length);
-    }, 3000);
+  const goToPrevious = () => {
+    setCurrentImageIndex((prev) => (prev - 1 + memeImages.length) % memeImages.length);
+  };
 
-    return () => clearInterval(imageInterval);
-  }, [memeImages.length]);
+  const goToNext = () => {
+    setCurrentImageIndex((prev) => (prev + 1) % memeImages.length);
+  };
 
 
   return (
@@ -75,9 +76,9 @@ export default function MemeSection() {
         </div>
 
         {/* Meme Banner */}
-        <div className="relative ">
-          <div className="relative z-10 overflow-hidden rounded-xl  ">
-            <div className="relative h-[300px] sm:h-[300px] md:h-[400px] lg:h-[500px]  py-2 sm:py-4 md:py-7 overflow-hidden rounded-xl">
+        <div className="relative">
+          <div className="relative z-10 overflow-hidden rounded-xl">
+            <div className="relative h-[300px] sm:h-[300px] md:h-[400px] lg:h-[500px] py-2 sm:py-4 md:py-7 overflow-hidden rounded-xl">
               <div
                 className="flex h-full transition-transform duration-500 ease-in-out"
                 style={{
@@ -121,6 +122,34 @@ export default function MemeSection() {
               ))}
             </div>
           </div>
+
+          {/* Left Arrow - Positioned relative to outer container */}
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              goToPrevious();
+            }}
+            className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-30 bg-white/90 hover:bg-white text-orange-500 rounded-full p-2 sm:p-3 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 cursor-pointer pointer-events-auto"
+            aria-label="Previous meme"
+            type="button"
+          >
+            <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+          </button>
+
+          {/* Right Arrow - Positioned relative to outer container */}
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              goToNext();
+            }}
+            className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-30 bg-white/90 hover:bg-white text-orange-500 rounded-full p-2 sm:p-3 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 cursor-pointer pointer-events-auto"
+            aria-label="Next meme"
+            type="button"
+          >
+            <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
+          </button>
 
           {/* Floating Elements */}
           <div className="absolute -top-4 -left-4 w-8 h-8 bg-orange-500 rounded-full animate-bounce-slow opacity-20"></div>
