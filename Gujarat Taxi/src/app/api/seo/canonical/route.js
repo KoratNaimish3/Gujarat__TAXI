@@ -145,3 +145,4 @@ function calculateSimilarity(str1, str2) {
 
 
 
+
