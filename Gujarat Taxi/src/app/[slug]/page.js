@@ -5,7 +5,7 @@ import Footer_Components from "@/components/common_components/Footer_components"
 import { useState, useEffect, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, ChevronDown, ChevronUp } from "lucide-react";
+import { ArrowLeft, ChevronDown, ChevronUp, Home, Search } from "lucide-react";
 
 export default function SlugPage() {
   const params = useParams();
@@ -15,77 +15,104 @@ export default function SlugPage() {
   const [contentType, setContentType] = useState(null); // 'route', 'city', 'airport', or 'blog'
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [notFound, setNotFound] = useState(false);
+
   const [openFAQIndex, setOpenFAQIndex] = useState(null);
   const contentRef = useRef(null);
 
   useEffect(() => {
     const fetchContent = async () => {
-      if (!slug) return;
+      if (!slug) {
+        setNotFound(true);
+        setLoading(false);
+        return;
+      }
+
+      // Check if slug looks invalid (contains invalid characters for URLs)
+      // Valid slugs should be alphanumeric with hyphens and underscores
+      const validSlugPattern = /^[a-zA-Z0-9_-]+$/;
+      if (!validSlugPattern.test(slug)) {
+        setNotFound(true);
+        setLoading(false);
+        return;
+      }
 
       try {
         setLoading(true);
         
-        // First, try to find in routes
-        try {
-          const routeRes = await fetch(`/api/routes/slug/${slug}`);
-          const routeData = await routeRes.json();
-          if (routeData.success && routeData.route) {
-            setContent(routeData.route);
-            setContentType('route');
-            setLoading(false);
-            return;
+        // Make all API calls in parallel for faster response
+        const [routeRes, cityRes, airportRes, blogRes] = await Promise.allSettled([
+          fetch(`/api/routes/slug/${slug}`),
+          fetch(`/api/cities/slug/${slug}`),
+          fetch(`/api/airports/slug/${slug}`),
+          fetch(`/api/blogs/slug/${slug}`)
+        ]);
+
+        // Check routes
+        if (routeRes.status === 'fulfilled') {
+          try {
+            const routeData = await routeRes.value.json();
+            if (routeData.success && routeData.route) {
+              setContent(routeData.route);
+              setContentType('route');
+              setLoading(false);
+              return;
+            }
+          } catch (e) {
+            // Continue
           }
-        } catch (e) {
-          // Continue to next check
         }
 
-        // Try to find in cities
-        try {
-          const cityRes = await fetch(`/api/cities/slug/${slug}`);
-          const cityData = await cityRes.json();
-          if (cityData.success && cityData.city) {
-            setContent(cityData.city);
-            setContentType('city');
-            setLoading(false);
-            return;
+        // Check cities
+        if (cityRes.status === 'fulfilled') {
+          try {
+            const cityData = await cityRes.value.json();
+            if (cityData.success && cityData.city) {
+              setContent(cityData.city);
+              setContentType('city');
+              setLoading(false);
+              return;
+            }
+          } catch (e) {
+            // Continue
           }
-        } catch (e) {
-          // Continue to next check
         }
 
-        // Try to find in airports
-        try {
-          const airportRes = await fetch(`/api/airports/slug/${slug}`);
-          const airportData = await airportRes.json();
-          if (airportData.success && airportData.airport) {
-            setContent(airportData.airport);
-            setContentType('airport');
-            setLoading(false);
-            return;
+        // Check airports
+        if (airportRes.status === 'fulfilled') {
+          try {
+            const airportData = await airportRes.value.json();
+            if (airportData.success && airportData.airport) {
+              setContent(airportData.airport);
+              setContentType('airport');
+              setLoading(false);
+              return;
+            }
+          } catch (e) {
+            // Continue
           }
-        } catch (e) {
-          // Continue to next check
         }
 
-        // If not found in routes/cities/airports, check if it's a blog
-        try {
-          const blogRes = await fetch(`/api/blogs/slug/${slug}`);
-          const blogData = await blogRes.json();
-          if (blogData.success && blogData.blog) {
-            // It's a blog, redirect to /blog/slug
-            router.push(`/blog/${slug}`);
-            return;
+        // Check blogs
+        if (blogRes.status === 'fulfilled') {
+          try {
+            const blogData = await blogRes.value.json();
+            if (blogData.success && blogData.blog) {
+              // It's a blog, redirect to /blog/slug
+              router.push(`/blog/${slug}`);
+              return;
+            }
+          } catch (e) {
+            // Continue
           }
-        } catch (e) {
-          // Not a blog either
         }
         
-        // Not found anywhere
-        setError("Content not found");
+        // Not found anywhere - show 404 immediately
+        setNotFound(true);
         setLoading(false);
       } catch (err) {
         console.error("Error fetching content:", err);
-        setError("Failed to load content");
+        setNotFound(true);
         setLoading(false);
       }
     };
@@ -167,41 +194,99 @@ export default function SlugPage() {
     };
   }, [content]);
 
-  if (loading) {
+  // Show 404 immediately if not found, don't show loading
+  if (notFound) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-50">
-        <Header_Components />
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
           <div className="text-center">
-            <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-orange-200 border-t-orange-600 mb-4"></div>
-            <p className="text-gray-600 font-medium text-lg">Loading...</p>
+            {/* 404 Number */}
+            <div className="mb-8">
+              <h1 className="text-8xl md:text-9xl font-bold bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text text-transparent">
+                404
+              </h1>
+            </div>
+
+            {/* Error Message */}
+            <div className="mb-8">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                Page Not Found
+              </h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                The page you're looking for doesn't exist or has been moved.
+              </p>
+            </div>
+
+            {/* Illustration/Icon */}
+            <div className="mb-12 flex justify-center">
+              <div className="relative">
+                <div className="w-32 h-32 md:w-40 md:h-40 bg-gradient-to-br from-orange-100 to-orange-200 rounded-full flex items-center justify-center">
+                  <Search className="w-16 h-16 md:w-20 md:h-20 text-orange-500" />
+                </div>
+                <div className="absolute -top-2 -right-2 w-8 h-8 bg-orange-400 rounded-full animate-bounce"></div>
+                <div className="absolute -bottom-2 -left-2 w-6 h-6 bg-orange-300 rounded-full animate-bounce" style={{ animationDelay: "0.5s" }}></div>
+              </div>
+            </div>
           </div>
         </div>
-        <Footer_Components />
       </div>
     );
   }
 
-  if (error || !content) {
+  if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-50">
-        <Header_Components />
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="text-center">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">Content Not Found</h1>
-            <p className="text-gray-600 mb-6">{error || "The content you're looking for doesn't exist."}</p>
-            <Link
-              href="/"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-xl font-semibold transition-all shadow-md hover:shadow-lg transform hover:scale-105"
-            >
-              <ArrowLeft size={18} />
-              Back to Home
-            </Link>
-          </div>
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-orange-200 border-t-orange-600 mb-4"></div>
+          <p className="text-gray-600 font-medium">Loading...</p>
         </div>
-        <Footer_Components />
       </div>
     );
+  }
+
+  if (notFound || (error && !loading)) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-50">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
+          <div className="text-center">
+            {/* 404 Number */}
+            <div className="mb-8">
+              <h1 className="text-8xl md:text-9xl font-bold bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text text-transparent">
+                404
+              </h1>
+            </div>
+
+            {/* Error Message */}
+            <div className="mb-8">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                Page Not Found
+              </h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                The page you're looking for doesn't exist or has been moved.
+              </p>
+            </div>
+
+            {/* Illustration/Icon */}
+            <div className="mb-12 flex justify-center">
+              <div className="relative">
+                <div className="w-32 h-32 md:w-40 md:h-40 bg-gradient-to-br from-orange-100 to-orange-200 rounded-full flex items-center justify-center">
+                  <Search className="w-16 h-16 md:w-20 md:h-20 text-orange-500" />
+                </div>
+                <div className="absolute -top-2 -right-2 w-8 h-8 bg-orange-400 rounded-full animate-bounce"></div>
+                <div className="absolute -bottom-2 -left-2 w-6 h-6 bg-orange-300 rounded-full animate-bounce" style={{ animationDelay: "0.5s" }}></div>
+              </div>
+            </div>
+
+            
+                 
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!content) {
+    return null;
   }
 
   const blog = content.blog;
